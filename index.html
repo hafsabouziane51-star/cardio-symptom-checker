@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Remix Icon -->
+    <link href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css" rel="stylesheet">
+    
+    <!-- Material Symbols -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" />
+    
+    <!-- Swiper -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.css"/>
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="style.css">
+
+    <title>ECG Smart Calculator</title>
+</head>
+
+<body>
+    <!-- HEADER -->
+    <header class="header">
+        <nav class="nav container">
+            <a href="#home" class="nav__logo">
+                <img src="canvas-removebg-preview.webp" alt="HeartCalc Logo" class="logo">     
+                HeartCalc   
+            </a>
+            
+            <div class="nav__burger" id="menu-button">
+                <i class="ri-menu-line"></i>
+            </div>
+            
+            <ul class="nav__list">
+                <li><a href="#home"><i class="ri-home-4-line"></i> Home</a></li>
+                <li><a href="#calculator"><i class="ri-calculator-line"></i> Calculator</a></li>
+                <li><a href="#report-generator"><i class="ri-file-medical-line"></i> Report</a></li>
+                <li><a href="#how-use"><i class="ri-information-line"></i> How to Use</a></li>
+                <li><a href="#about"><i class="ri-user-line"></i> About</a></li>
+                <li><a href="#contact"><i class="ri-mail-line"></i> Contact</a></li>
+            </ul>
+            
+            <div class="nav__actions">
+                <i class="ri-moon-line" id="theme-button"></i>
+            </div>
+        </nav>
+    </header>
+
+    <!-- HOME SECTION -->
+    <section class="home section" id="home">
+        <div class="home__container container">
+            <!-- LEFT TEXT -->
+            <div class="home__data">
+                <h1>Calculateur d'Intervalle RR ECG</h1>
+                <p>
+                    Cliquez sur deux pics R dans le tracé ECG pour mesurer l'intervalle RR et calculer automatiquement la fréquence cardiaque (Heart Rate).
+                </p>
+            </div>
+
+            <!-- RIGHT ECG MONITOR -->
+            <div class="home__img">
+                <div class="ecg-container">
+                    <div class="grid-bg"></div>
+                    <svg class="ecg-wave" viewBox="0 0 1200 300" preserveAspectRatio="xMidYMid meet">
+                        <defs>
+                            <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+                                <feGaussianBlur stdDeviation="2" result="blur"/>
+                                <feMerge>
+                                    <feMergeNode in="blur"/>
+                                    <feMergeNode in="SourceGraphic"/>
+                                </feMerge>
+                            </filter>
+                            <filter id="peakGlow" x="-100%" y="-100%" width="300%" height="300%">
+                                <feGaussianBlur stdDeviation="6" result="blur"/>
+                                <feMerge>
+                                    <feMergeNode in="blur"/>
+                                    <feMergeNode in="blur"/>
+                                    <feMergeNode in="SourceGraphic"/>
+                                </feMerge>
+                            </filter>
+                        </defs>
+                        <path id="ecgPath" class="ecg-line" fill="none" stroke="#00FF88" stroke-width="2.5"
+                              stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)" />
+                        <g class="peaks" id="peaks"></g>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CALCULATOR SECTION -->
+    <section class="calculator section" id="calculator">
+        <div class="container">
+            <h2 class="section__title center-title">ECG Calculator</h2>
+            
+            <!-- Calculator Features Cards -->
+            <div class="features__grid">
+                <div class="feature__card">
+                    <i class="ri-heart-pulse-line"></i>
+                    <h3>Heart Rate</h3>
+                    <p>Calculate BPM from RR interval</p>
+                </div>
+                <div class="feature__card">
+                    <i class="ri-activity-line"></i>
+                    <h3>ECG Analysis</h3>
+                    <p>Analyze ECG waveforms</p>
+                </div>
+                <div class="feature__card">
+                    <i class="ri-time-line"></i>
+                    <h3>RR Interval</h3>
+                    <p>Measure time between beats</p>
+                </div>
+                <div class="feature__card">
+                    <i class="ri-file-chart-line"></i>
+                    <h3>Results</h3>
+                    <p>Export and save results</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- HEART RATE CALCULATOR -->
+    <section class="hr-calculator section" id="hr-calculator">
+        <div class="container">
+            <h2 class="section__title center-title">Heart Rate Calculator</h2>
+            
+            <div class="calculator-wrapper">
+                <div class="calculator-card">
+                    <!-- Rhythm Type Selection -->
+                    <div class="rhythm-selector">
+                        <label class="selector-label">Select Rhythm Type:</label>
+                        <div class="rhythm-buttons">
+                            <button class="rhythm-btn active" data-rhythm="regular" onclick="selectRhythm('regular')">
+                                <i class="ri-heart-fill"></i> Regular
+                            </button>
+                            <button class="rhythm-btn" data-rhythm="irregular" onclick="selectRhythm('irregular')">
+                                <i class="ri-heart-add-fill"></i> Irregular
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Regular Rhythm Input -->
+                    <div class="input-section" id="regular-input">
+                        <div class="input-group">
+                            <label for="rr-interval">RR Interval (small squares)</label>
+                            <input type="number" id="rr-interval" class="calc-input" placeholder="Enter RR interval" min="1">
+                            <span class="input-hint">Normal: 15-30 small squares (60-100 BPM)</span>
+                        </div>
+                        <button class="calc-btn" onclick="calculateHRRegular()">Calculate Heart Rate</button>
+                    </div>
+
+                    <!-- Irregular Rhythm Input -->
+                    <div class="input-section hidden" id="irregular-input">
+                        <div class="input-group">
+                            <label for="qrs-count">QRS Complexes in 10 Large Squares</label>
+                            <input type="number" id="qrs-count" class="calc-input" placeholder="Count QRS complexes" min="0" max="20">
+                            <span class="input-hint">Each large square = 5 small squares (0.2 seconds)</span>
+                        </div>
+                        <button class="calc-btn" onclick="calculateHRIrregular()">Estimate Heart Rate</button>
+                    </div>
+
+                    <!-- Result Display -->
+                    <div class="result-display" id="hr-result">
+                        <div class="result-value">
+                            <span class="result-number" id="hr-value">--</span>
+                            <span class="result-unit">BPM</span>
+                        </div>
+                        <div class="result-interpretation" id="hr-interpretation"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ECG MEASUREMENT MODULE -->
+    <section class="ecg-measurement section" id="ecg-measurement">
+        <div class="container">
+            <h2 class="section__title center-title">ECG Measurement Module</h2>
+            
+            <div class="calculator-wrapper">
+                <div class="calculator-card measurement-card">
+                    <div class="measurement-grid">
+                        <!-- PR Interval -->
+                        <div class="measurement-item">
+                            <div class="measurement-header">
+                                <i class="ri-time-line"></i>
+                                <h3>PR Interval</h3>
+                            </div>
+                            <div class="measurement-input">
+                                <input type="number" id="pr-interval" class="calc-input" placeholder="Small squares" min="0" step="0.5">
+                                <span class="input-suffix">small squares</span>
+                            </div>
+                            <div class="measurement-result">
+                                <div class="result-row">
+                                    <span class="result-label">In milliseconds:</span>
+                                    <span class="result-value-small" id="pr-ms">-- ms</span>
+                                </div>
+                                <div class="interpretation-box" id="pr-interpretation">
+                                    <span class="interpretation-text">Enter value to see interpretation</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- QRS Duration -->
+                        <div class="measurement-item">
+                            <div class="measurement-header">
+                                <i class="ri-activity-line"></i>
+                                <h3>QRS Duration</h3>
+                            </div>
+                            <div class="measurement-input">
+                                <input type="number" id="qrs-duration" class="calc-input" placeholder="Small squares" min="0" step="0.5">
+                                <span class="input-suffix">small squares</span>
+                            </div>
+                            <div class="measurement-result">
+                                <div class="result-row">
+                                    <span class="result-label">In milliseconds:</span>
+                                    <span class="result-value-small" id="qrs-ms">-- ms</span>
+                                </div>
+                                <div class="interpretation-box" id="qrs-interpretation">
+                                    <span class="interpretation-text">Enter value to see interpretation</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- QT Interval -->
+                        <div class="measurement-item">
+                            <div class="measurement-header">
+                                <i class="ri-heart-pulse-line"></i>
+                                <h3>QT Interval</h3>
+                            </div>
+                            <div class="measurement-input">
+                                <input type="number" id="qt-interval" class="calc-input" placeholder="Small squares" min="0" step="0.5">
+                                <span class="input-suffix">small squares</span>
+                            </div>
+                            <div class="measurement-result">
+                                <div class="result-row">
+                                    <span class="result-label">In milliseconds:</span>
+                                    <span class="result-value-small" id="qt-ms">-- ms</span>
+                                </div>
+                                <div class="interpretation-box" id="qt-interpretation">
+                                    <span class="interpretation-text">Enter value to see interpretation</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="calc-btn full-width" onclick="calculateAllMeasurements()">Analyze All Measurements</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ECG AXIS CALCULATOR -->
+    <section class="axis-calculator section" id="axis-calculator">
+        <div class="container">
+            <h2 class="section__title center-title">ECG Axis Calculator</h2>
+            
+            <div class="calculator-wrapper">
+                <div class="calculator-card axis-card">
+                    <div class="axis-content">
+                        <!-- Lead Inputs -->
+                        <div class="axis-inputs">
+                            <h3>Determine Cardiac Axis</h3>
+                            <p class="axis-description">Select the polarity of Lead I and Lead II to determine the electrical axis of the heart.</p>
+                            
+                            <div class="lead-selector">
+                                <div class="lead-item">
+                                    <label>Lead I</label>
+                                    <div class="polarity-toggle">
+                                        <button class="polarity-btn positive active" data-lead="I" data-polarity="positive" onclick="setLeadPolarity('I', 'positive')">
+                                            <i class="ri-add-circle-line"></i> Positive (+)
+                                        </button>
+                                        <button class="polarity-btn negative" data-lead="I" data-polarity="negative" onclick="setLeadPolarity('I', 'negative')">
+                                            <i class="ri-subtract-circle-line"></i> Negative (−)
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div class="lead-item">
+                                    <label>Lead II</label>
+                                    <div class="polarity-toggle">
+                                        <button class="polarity-btn positive active" data-lead="II" data-polarity="positive" onclick="setLeadPolarity('II', 'positive')">
+                                            <i class="ri-add-circle-line"></i> Positive (+)
+                                        </button>
+                                        <button class="polarity-btn negative" data-lead="II" data-polarity="negative" onclick="setLeadPolarity('II', 'negative')">
+                                            <i class="ri-subtract-circle-line"></i> Negative (−)
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button class="calc-btn" onclick="calculateAxis()">Calculate Axis</button>
+
+                            <!-- Axis Result -->
+                            <div class="axis-result" id="axis-result">
+                                <div class="axis-label">Electrical Axis:</div>
+                                <div class="axis-value" id="axis-name">--</div>
+                                <div class="axis-range" id="axis-range"></div>
+                            </div>
+                        </div>
+
+                        <!-- Compass Visualization -->
+                        <div class="axis-compass">
+                            <div class="compass-container">
+                                <svg class="compass-svg" viewBox="0 0 300 300">
+                                    <!-- Background Circle -->
+                                    <circle cx="150" cy="150" r="140" class="compass-bg"/>
+                                    
+                                    <!-- Degree Markers -->
+                                    <g class="degree-markers">
+                                        <text x="150" y="25" class="degree-label">-180°</text>
+                                        <text x="150" y="285" class="degree-label">0°</text>
+                                        <text x="275" y="155" class="degree-label">+90°</text>
+                                        <text x="25" y="155" class="degree-label">-90°</text>
+                                        
+                                        <text x="220" y="50" class="degree-label-small">-135°</text>
+                                        <text x="220" y="265" class="degree-label-small">-45°</text>
+                                        <text x="80" y="50" class="degree-label-small">-135°</text>
+                                        <text x="80" y="265" class="degree-label-small">-45°</text>
+                                    </g>
+                                    
+                                    <!-- Axis Quadrants -->
+                                    <g class="quadrants">
+                                        <!-- Normal (Green) -->
+                                        <path d="M150 150 L150 10 A140 140 0 0 1 290 150 Z" class="quadrant normal" fill="rgba(16, 185, 129, 0.15)"/>
+                                        <!-- LAD (Orange) -->
+                                        <path d="M150 150 L10 150 A140 140 0 0 1 150 10 Z" class="quadrant lad" fill="rgba(249, 115, 22, 0.15)"/>
+                                        <!-- RAD (Red) -->
+                                        <path d="M150 150 L290 150 A140 140 0 0 1 150 290 Z" class="quadrant rad" fill="rgba(239, 68, 68, 0.15)"/>
+                                        <!-- Extreme (Purple) -->
+                                        <path d="M150 150 L150 290 A140 140 0 0 1 10 150 Z" class="quadrant extreme" fill="rgba(168, 85, 247, 0.15)"/>
+                                    </g>
+                                    
+                                    <!-- Axis Indicator Arrow -->
+                                    <g class="axis-indicator" id="axis-indicator">
+                                        <line x1="150" y1="150" x2="150" y2="30" class="axis-arrow" stroke="#00ff88" stroke-width="4" stroke-linecap="round"/>
+                                        <polygon points="150,20 140,40 160,40" class="axis-arrow-head" fill="#00ff88"/>
+                                    </g>
+                                    
+                                    <!-- Center Point -->
+                                    <circle cx="150" cy="150" r="8" class="compass-center"/>
+                                </svg>
+                                
+                                <div class="compass-legend">
+                                    <div class="legend-item">
+                                        <span class="legend-color normal"></span>
+                                        <span>Normal (−30° to +90°)</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <span class="legend-color lad"></span>
+                                        <span>LAD (−30° to −90°)</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <span class="legend-color rad"></span>
+                                        <span>RAD (+90° to +180°)</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <span class="legend-color extreme"></span>
+                                        <span>Extreme Axis</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SMART MEDICAL REPORT GENERATOR -->
+    <section class="report-generator section" id="report-generator">
+        <div class="container">
+            <h2 class="section__title center-title">Smart Medical Report Generator</h2>
+            
+            <div class="report-wrapper">
+                <!-- Patient Information Form -->
+                <div class="patient-form-card">
+                    <div class="form-header">
+                        <i class="ri-user-heart-line"></i>
+                        <h3>Patient Information</h3>
+                    </div>
+                    
+                    <form id="patientForm" class="patient-form">
+                        <!-- Patient Information Section -->
+                        <div class="form-section-header">
+                            <i class="ri-user-line"></i>
+                            <h4>Patient Information</h4>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="patientName">Full Name</label>
+                                <input type="text" id="patientName" class="form-input" placeholder="Enter patient name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="patientAge">Age</label>
+                                <input type="number" id="patientAge" class="form-input" placeholder="Years" min="1" max="150" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="patientGender">Gender</label>
+                                <select id="patientGender" class="form-input" required>
+                                    <option value="">Select gender</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="patientHeight">Height (cm)</label>
+                                <input type="number" id="patientHeight" class="form-input" placeholder="cm" min="1" max="300" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="patientWeight">Weight (kg)</label>
+                                <input type="number" id="patientWeight" class="form-input" placeholder="kg" min="1" max="500" required>
+                            </div>
+                        </div>
+                        
+                        <!-- ECG Measurements Section -->
+                        <div class="form-section-header">
+                            <i class="ri-heart-pulse-line"></i>
+                            <h4>ECG Measurements</h4>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="reportHeartRate">Heart Rate (bpm)</label>
+                                <input type="number" id="reportHeartRate" class="form-input" placeholder="e.g., 72" min="20" max="300">
+                            </div>
+                            <div class="form-group">
+                                <label for="reportPRInterval">PR Interval (ms)</label>
+                                <input type="number" id="reportPRInterval" class="form-input" placeholder="e.g., 160" min="0" max="500">
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="reportQRSDuration">QRS Duration (ms)</label>
+                                <input type="number" id="reportQRSDuration" class="form-input" placeholder="e.g., 90" min="0" max="300">
+                            </div>
+                            <div class="form-group">
+                                <label for="reportQTInterval">QT Interval (ms)</label>
+                                <input type="number" id="reportQTInterval" class="form-input" placeholder="e.g., 400" min="0" max="700">
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="reportElectricalAxis">Electrical Axis</label>
+                                <select id="reportElectricalAxis" class="form-input">
+                                    <option value="">Select axis</option>
+                                    <option value="Normal Axis">Normal (−30° to +90°)</option>
+                                    <option value="Left Axis Deviation">Left Axis Deviation (−30° to −90°)</option>
+                                    <option value="Right Axis Deviation">Right Axis Deviation (+90° to +180°)</option>
+                                    <option value="Extreme Axis">Extreme Axis</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <button type="button" class="generate-report-btn" onclick="generateMedicalReport()">
+                            <i class="ri-file-medical-line"></i>
+                            Generate Medical Report
+                        </button>
+                    </form>
+                </div>
+                
+                <!-- Medical Report Container (Hidden by default) -->
+                <div class="medical-report-container" id="medicalReport" style="display: none;">
+                    <div class="medical-report">
+                        <!-- Report Header -->
+                        <div class="report-header">
+                            <div class="report-logo">
+                                <svg viewBox="0 0 24 24" width="40" height="40">
+                                    <path d="M22 12h-4l-3 9L9 3l-3 9H2" fill="none" stroke="currentColor" stroke-width="2"/>
+                                </svg>
+                            </div>
+                            <div class="report-title-section">
+                                <h2>ECG Smart Calculator</h2>
+                                <p>Medical Report</p>
+                            </div>
+                            <div class="report-date" id="reportDate"></div>
+                        </div>
+                        
+                        <!-- ECG Waveform Decoration -->
+                        <div class="report-ecg-decoration">
+                            <svg viewBox="0 0 800 40" preserveAspectRatio="none">
+                                <path d="M0,20 L50,20 L55,10 L60,30 L65,20 L80,20 L85,5 L90,35 L95,20 L120,20 L125,15 L130,25 L135,20 L150,20" 
+                                      fill="none" stroke="var(--primary-color)" stroke-width="1.5" opacity="0.3"/>
+                            </svg>
+                        </div>
+                        
+                        <!-- Section 1: Patient Information -->
+                        <div class="report-section">
+                            <div class="section-header">
+                                <i class="ri-user-line"></i>
+                                <h3>Patient Information</h3>
+                            </div>
+                            <div class="patient-info-grid" id="patientInfoDisplay">
+                                <!-- Dynamic content -->
+                            </div>
+                        </div>
+                        
+                        <!-- Section 2: ECG Measurements -->
+                        <div class="report-section">
+                            <div class="section-header">
+                                <i class="ri-heart-pulse-line"></i>
+                                <h3>ECG Measurement Results</h3>
+                            </div>
+                            <div class="ecg-table-container">
+                                <table class="ecg-measurements-table" id="ecgMeasurementsTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Parameter</th>
+                                            <th>Value</th>
+                                            <th>Reference Range</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="ecgMeasurementsBody">
+                                        <!-- Dynamic content -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <!-- Section 3: ECG Interpretation -->
+                        <div class="report-section">
+                            <div class="section-header">
+                                <i class="ri-file-chart-line"></i>
+                                <h3>ECG Interpretation</h3>
+                            </div>
+                            <p class="interpretation-text" id="ecgInterpretation">
+                                <!-- Dynamic content -->
+                            </p>
+                        </div>
+                        
+                        <!-- Section 4: BMI Analysis -->
+                        <div class="report-section">
+                            <div class="section-header">
+                                <i class="ri-scales-line"></i>
+                                <h3>BMI Analysis</h3>
+                            </div>
+                            <div class="bmi-result" id="bmiResult">
+                                <!-- Dynamic content -->
+                            </div>
+                        </div>
+                        
+                        <!-- Section 5: Clinical Insight -->
+                        <div class="report-section">
+                            <div class="section-header">
+                                <i class="ri-psychology-line"></i>
+                                <h3>Clinical Insight</h3>
+                            </div>
+                            <p class="clinical-text" id="clinicalInsight">
+                                <!-- Dynamic content -->
+                            </p>
+                        </div>
+                        
+                        <!-- Section 6: Smart Medical Questions -->
+                        <div class="report-section">
+                            <div class="section-header">
+                                <i class="ri-questionnaire-line"></i>
+                                <h3>Smart Medical Questions</h3>
+                            </div>
+                            <ul class="medical-questions" id="medicalQuestions">
+                                <li>Does the patient experience chest pain?</li>
+                                <li>Is there a history of cardiovascular disease?</li>
+                                <li>Does the patient experience dizziness or fatigue?</li>
+                                <li>Are there risk factors such as smoking or hypertension?</li>
+                            </ul>
+                        </div>
+                        
+                        <!-- Section 7: Medical Summary -->
+                        <div class="report-section">
+                            <div class="section-header">
+                                <i class="ri-file-warning-line"></i>
+                                <h3>Medical Summary</h3>
+                            </div>
+                            <p class="summary-text" id="medicalSummary">
+                                <!-- Dynamic content -->
+                            </p>
+                        </div>
+                        
+                        <!-- Report Actions -->
+                        <div class="report-actions">
+                            <button class="action-btn download-btn" onclick="downloadReport()">
+                                <i class="ri-download-line"></i>
+                                Download Report
+                            </button>
+                            <button class="action-btn print-btn" onclick="printReport()">
+                                <i class="ri-printer-line"></i>
+                                Print Report
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- HOW TO USE SECTION -->
+    <section class="how-use section" id="how-use">
+        <div class="container">
+            <h2 class="section__title center-title">How to Use</h2>
+            
+            <div class="how-use__content">
+                <div class="how-use__step">
+                    <div class="step-number">1</div>
+                    <div class="step-text">
+                        <h3>View the ECG</h3>
+                        <p>Observe the ECG waveform displayed on the screen with real-time animation.</p>
+                    </div>
+                </div>
+                
+                <div class="how-use__step">
+                    <div class="step-number">2</div>
+                    <div class="step-text">
+                        <h3>Identify R Peaks</h3>
+                        <p>Locate the highest peaks (R waves) in the ECG tracing.</p>
+                    </div>
+                </div>
+                
+                <div class="how-use__step">
+                    <div class="step-number">3</div>
+                    <div class="step-text">
+                        <h3>Measure RR Interval</h3>
+                        <p>Calculate the time between two consecutive R peaks.</p>
+                    </div>
+                </div>
+                
+                <div class="how-use__step">
+                    <div class="step-number">4</div>
+                    <div class="step-text">
+                        <h3>Get Heart Rate</h3>
+                        <p>The calculator automatically converts RR interval to heart rate (BPM).</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ABOUT SECTION -->
+    <section class="about section" id="about">
+        <div class="container">
+            <h2 class="section__title center-title">About</h2>
+            
+            <div class="about__content">
+                <div class="about__info">
+                    <h3>ECG Smart Calculator</h3>
+                    <p>
+                        An educational tool designed for medical students and healthcare professionals 
+                        to practice and understand ECG interval analysis and heart rate calculation.
+                    </p>
+                    <p>
+                        This platform is intended for <strong>educational purposes only</strong> and 
+                        does not replace professional medical diagnosis.
+                    </p>
+                </div>
+                
+                <div class="about__creator">
+                    <div class="creator-card">
+                        <h4>Creator</h4>
+                        <p class="creator-name">Bou ZIANE Hafsa</p>
+                        <p class="creator-title">3rd Year Biomedical Engineering Student</p>
+                        <p class="creator-university">Université d'Oran 1 Ahmed Ben Bella (IGMO)</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CONTACT SECTION -->
+    <section class="contact" id="contact">
+        <div class="contact-container">
+            <!-- Left Column - Text Content -->
+            <div class="contact-text">
+                <h1 class="main-headline">
+                    Your Heart Health <span>Questions</span> Matter to Us
+                </h1>
+                <p class="intro-paragraph">
+                    Have questions about <strong>ECG analysis</strong>, <strong>heart rate calculation</strong>, 
+                    or our <strong>biomedical innovation</strong>? We're here to provide the support you need.
+                </p>
+                
+                <div class="highlights-grid">
+                    <div class="highlight-box"> 
+                        <div class="highlight-icon">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                            </svg>
+                        </div>
+                        <h3 class="highlight-title">Accurate ECG Tools</h3>
+                    </div>
+
+                    <div class="highlight-box">
+                        <div class="highlight-icon">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                                <path d="M2 17l10 5 10-5"/>
+                                <path d="M2 12l10 5 10-5"/>
+                            </svg>
+                        </div>
+                        <h3 class="highlight-title">Biomedical Innovation</h3>
+                    </div>
+
+                    <div class="highlight-box">
+                        <div class="highlight-icon">
+                            <svg viewBox="0 0 24 24">
+                                <circle cx="12" cy="12" r="10"/>
+                                <polyline points="12 6 12 12 16 14"/>
+                            </svg>
+                        </div>
+                        <h3 class="highlight-title">Fast & Reliable Response</h3>
+                    </div>
+                </div>
+            </div>
+     
+
+            <!-- Right Column - Contact Card -->
+            <div class="contact-card-wrapper">
+                <div class="contact-card">
+                    <div class="card-glow top-right"></div>
+                    <div class="card-glow bottom-left"></div>
+
+                    <div class="ecg-pulse">
+                        <svg viewBox="0 0 100 35">
+                            <path d="M0,18 L15,18 L18,10 L22,26 L26,18 L35,18 L40,18 L43,10 L47,26 L50,18 L65,18 L68,5 L72,31 L75,18 L100,18"/>
+                        </svg>
+                    </div>
+
+                    <h2 class="card-title">Send Us a Message</h2>
+                    <p class="card-subtitle">We'd love to hear from you. Fill out the form below.</p>
+
+                    <form action="https://api.web3forms.com/submit" method="POST" class="contact-form">
+                        <input type="hidden" name="access_key" value="df599fea-e2ba-4731-840c-b3e814010f52">
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="name">Full Name</label>
+                            <input type="text" id="name" name="name" class="form-input" placeholder="Enter your full name" autocomplete="name" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="email">Email Address</label>
+                            <input type="email" id="email" name="email" class="form-input" placeholder="Enter your email address" autocomplete="email" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="message">Message</label>
+                            <textarea id="message" name="message" class="form-textarea" placeholder="Write your message here..." required></textarea>
+                        </div>
+
+                        <button type="submit" class="submit-btn">Send Message</button>
+                        
+                        <p id="formMessage" class="form-message"></p>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Map Section -->
+        <section class="map-section">
+            <h2 class="map-section-title">Find Us <span>Here</span></h2>
+            
+            <div class="map-info-cards">
+                <div class="info-card">
+                    <div class="info-card-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                        </svg>
+                    </div>
+                    <p class="info-card-label">Phone</p>
+                    <p class="info-card-value"><a href="tel:+1234567890">079376XX50</a></p>
+                </div>
+
+                <div class="info-card">
+                    <div class="info-card-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                            <polyline points="22,6 12,13 2,6"/>
+                        </svg>
+                    </div>
+                    <p class="info-card-label">Email</p>
+                    <p class="info-card-value"><a href="mailto:hafsabouziane51@gmail.com">hafsabouziane51@gmail.com</a></p>
+                </div>
+
+                <div class="info-card">
+                    <div class="info-card-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                            <circle cx="12" cy="10" r="3"/>
+                        </svg>
+                    </div>
+                    <p class="info-card-label">Location</p>
+                    <p class="info-card-value">Université d'Oran 1 Ahmed Ben Bella (IGMO)</p>
+                </div>
+            </div>
+
+            <div class="map-container">
+                <iframe 
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3241.651654964893!2d-0.6340116253994926!3d35.66095317259375!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xd7e898544fe4111%3A0xec7fb9be624a778b!2sCampus%20II%20-%20University%20of%20Oran%201%20(ex-IGMO)!5e0!3m2!1sen!2sdz!4v1772699647724!5m2!1sen!2sdz"
+                    width="100%" 
+                    height="300" 
+                    style="border:0;" 
+                    allowfullscreen 
+                    loading="lazy">
+                </iframe>
+            </div>
+        </section>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="footer-pattern"></div>
+        <div class="footer-glow-divider"></div>
+        
+        <div class="footer-content">
+            <!-- Left Column - Brand & Contact -->
+            <div class="footer-brand">
+                <div class="footer-logo">
+                    <div class="footer-logo-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                        </svg>
+                    </div>
+                    <div class="footer-brand-text">
+                        <span class="brand-ecg">ECG</span>
+                        <span class="brand-smart">Smart</span>
+                        <span class="brand-calculator">Practice</span>
+                    </div>
+                </div>
+                <p class="footer-description">
+                    Empowering healthcare professionals with advanced ECG analysis tools and intelligent heart health monitoring.
+                </p>
+                <div class="footer-contact-info">
+                    <a href="tel:+1234567890" class="footer-contact-item">
+                        <div class="contact-icon">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                            </svg>
+                        </div>
+                        <span>079376XX50</span>
+                    </a>
+                    <a href="mailto:hafsabouziane51@gmail.com" class="footer-contact-item">
+                        <div class="contact-icon">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                                <polyline points="22,6 12,13 2,6"/>
+                            </svg>
+                        </div>
+                        <span>hafsabouziane51@gmail.com</span>
+                    </a>
+                    <div class="footer-contact-item">
+                        <div class="contact-icon">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                                <circle cx="12" cy="10" r="3"/>
+                            </svg>
+                        </div>
+                        <span>Université d'Oran 1 (IGMO)</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Center Column - Quick Links -->
+            <div class="footer-links-section">
+                <h3 class="footer-section-title">Quick Links</h3>
+                <ul class="footer-links">
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#about">About Us</a></li>
+                    <li><a href="#calculator">ECG Tools</a></li>
+                    <li><a href="#how-use">How to Use</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </div>
+
+            <!-- Right Column - Newsletter -->
+            <div class="footer-newsletter">
+                <div class="newsletter-card">
+                    <h3 class="footer-section-title">Stay Informed</h3>
+                    <p class="newsletter-text">
+                        Join our community of medical professionals. Get academic updates, ECG insights, and clinical tips.
+                    </p>        
+                    <form action="https://api.web3forms.com/submit" method="POST" class="contact-form">
+                        <input type="hidden" name="access_key" value="df599fea-e2ba-4731-840c-b3e814010f52">
+                        <div class="input-wrapper">
+                            <input type="email" name="email" class="newsletter-input" placeholder="Enter your email" required>
+                        </div>
+                        <button type="submit" class="submit-btn">Subscribe</button>
+                    </form>
+                    <p class="newsletter-trust">
+                        <svg viewBox="0 0 24 24" class="trust-icon">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                        </svg>
+                        No spam. Academic updates only.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p class="footer-copyright">
+                © 2026 Bouziane Hafsa | 3rd Year Biomedical Engineering | PulseIQ Creator
+            </p>
+            <p class="footer-disclaimer">
+                This platform is intended for educational purposes only and does not replace professional medical diagnosis.
+            </p>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="main.js"></script>
+</body>
+</html>
+
