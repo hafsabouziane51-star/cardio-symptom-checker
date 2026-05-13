@@ -1,0 +1,533 @@
+
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heart Health Checker | Professional Assessment</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Noto+Sans+Arabic:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #ff4757;
+            --primary-light: #ff6b81;
+            --secondary: #2f3542;
+            --accent: #1e90ff;
+            --success: #2ed573;
+            --warning: #ffa502;
+            --danger: #eb4d4b;
+            --glass: rgba(255, 255, 255, 0.9);
+            --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        [dir="rtl"] { font-family: 'Noto Sans Arabic', sans-serif; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+
+        body {
+            background: var(--bg-gradient);
+            min-height: 100vh;
+            color: var(--secondary);
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Animations */
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Layout */
+        .navbar {
+            padding: 15px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.5);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .lang-selector select { padding: 6px 12px; border-radius: 20px; border: 1px solid #ddd; outline: none; cursor: pointer; }
+
+        .container { max-width: 850px; margin: 30px auto; padding: 0 20px; flex: 1; width: 100%; }
+
+        .card {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255,255,255,0.4);
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        /* Hero */
+        .hero-heart { font-size: 70px; animation: pulse 2s infinite; margin-bottom: 20px; display: inline-block; }
+        h1 { font-size: 2.2rem; margin-bottom: 15px; color: var(--secondary); line-height: 1.2; }
+        .subtitle { font-size: 1.1rem; color: #57606f; margin-bottom: 30px; }
+
+        /* Progress Bar */
+        .progress-wrapper { margin-bottom: 30px; }
+        .progress-track { height: 6px; background: #eee; border-radius: 10px; overflow: hidden; margin-bottom: 10px; }
+        .progress-fill { height: 100%; background: var(--primary); width: 0%; transition: width 0.5s ease; }
+        .step-label { font-size: 0.85rem; font-weight: 700; color: var(--accent); text-transform: uppercase; }
+
+        /* Questions */
+        .question-box { margin-bottom: 30px; animation: fadeIn 0.4s ease-out; }
+        .question-text { font-size: 1.15rem; font-weight: 600; margin-bottom: 15px; display: block; }
+        .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .option-btn {
+            padding: 14px;
+            border: 2px solid #e1e8ed;
+            border-radius: 14px;
+            background: white;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 1rem;
+            font-weight: 500;
+        }
+        .option-btn:hover { border-color: var(--primary-light); background: #fffafb; }
+        .option-btn.selected { border-color: var(--primary); background: #fff5f6; color: var(--primary); box-shadow: 0 4px 12px rgba(255,71,87,0.15); }
+
+        .input-group { margin-bottom: 15px; }
+        input[type="number"] { width: 100%; padding: 12px; border-radius: 12px; border: 2px solid #ddd; outline: none; }
+
+        /* Results */
+        .chart-container { position: relative; width: 200px; height: 200px; margin: 0 auto 30px; }
+        .score-svg { transform: rotate(-90deg); }
+        .score-bg { fill: none; stroke: #eee; stroke-width: 10; }
+        .score-progress { fill: none; stroke: var(--primary); stroke-width: 10; stroke-linecap: round; transition: stroke-dasharray 1s ease; }
+        .score-content { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; }
+        .score-num { font-size: 3rem; font-weight: 800; display: block; }
+        .score-txt { font-size: 0.8rem; color: #777; text-transform: uppercase; }
+
+        .challenge-card { background: white; border-radius: 15px; padding: 15px; margin-bottom: 10px; display: flex; align-items: center; gap: 15px; border-left: 5px solid var(--success); }
+        [dir="rtl"] .challenge-card { border-left: none; border-right: 5px solid var(--success); }
+
+        .btn { padding: 14px 30px; border-radius: 30px; border: none; font-weight: 700; cursor: pointer; transition: var(--transition); font-size: 1rem; }
+        .btn-primary { background: var(--primary); color: white; box-shadow: 0 8px 20px rgba(255, 71, 87, 0.3); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 25px rgba(255, 71, 87, 0.4); }
+        .btn-outline { background: transparent; border: 2px solid #ddd; }
+
+        .hidden { display: none !important; }
+        .emergency-alert { background: #fff5f5; border: 2px solid var(--danger); color: var(--danger); padding: 20px; border-radius: 15px; margin: 20px 0; font-weight: 700; text-align: center; }
+
+        @media (max-width: 600px) { .options-grid { grid-template-columns: 1fr; } h1 { font-size: 1.6rem; } }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="lang-selector">
+            <select id="langSelect" onchange="changeLanguage(this.value)">
+                <option value="en">English 🇺🇸</option>
+                <option value="ar">العربية 🇩🇿</option>
+                <option value="fr">Français 🇫🇷</option>
+            </select>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Home -->
+        <div id="home-screen" class="card">
+            <div class="hero-heart">🫀</div>
+            <h1 data-i18n="hero_title">Check Your Heart Health Now</h1>
+            <p class="subtitle" data-i18n="hero_subtitle">An advanced personal health experience to evaluate your risk factors and lifestyle.</p>
+            <button class="btn btn-primary" onclick="startQuiz()" data-i18n="start_btn">Start Heart Check</button>
+        </div>
+
+        <!-- Quiz -->
+        <div id="quiz-screen" class="card hidden">
+            <div class="progress-wrapper">
+                <div class="progress-track"><div id="progress-fill" class="progress-fill"></div></div>
+                <div id="step-label" class="step-label">Step 1 of 8</div>
+            </div>
+
+            <div id="question-area"></div>
+
+            <div style="display: flex; justify-content: space-between; margin-top: 30px;">
+                <button id="prevBtn" class="btn btn-outline" onclick="moveStep(-1)" data-i18n="back">Back</button>
+                <button id="nextBtn" class="btn btn-primary" onclick="moveStep(1)" data-i18n="next">Next</button>
+            </div>
+        </div>
+
+        <!-- Result -->
+        <div id="result-screen" class="card hidden">
+            <h2 style="text-align: center; margin-bottom: 20px;" data-i18n="result_title">Your Heart Health Score</h2>
+            
+            <div class="chart-container">
+                <svg class="score-svg" viewBox="0 0 100 100">
+                    <circle class="score-bg" cx="50" cy="50" r="45"></circle>
+                    <circle id="score-circle" class="score-progress" cx="50" cy="50" r="45" stroke-dasharray="0 283"></circle>
+                </svg>
+                <div class="score-content">
+                    <span id="score-value" class="score-num">0</span>
+                    <span class="score-txt">Health Index</span>
+                </div>
+            </div>
+
+            <div id="status-badge" style="text-align: center; font-size: 1.4rem; font-weight: 800; margin-bottom: 20px;">---</div>
+            <p id="result-desc" style="text-align: center; margin-bottom: 30px; line-height: 1.6;"></p>
+
+            <div id="emergency-area" class="hidden">
+                <div class="emergency-alert">
+                    <p data-i18n="emergency_msg">🚨 URGENT: High-risk symptoms detected. Please consult a doctor immediately or call emergency services.</p>
+                    <button class="btn btn-primary" style="margin-top: 15px; width: 100%; background: var(--danger);" onclick="window.print()" data-i18n="call_action">Print Report for Doctor</button>
+                </div>
+            </div>
+
+            <div id="lifestyle-challenges">
+                <h3 style="margin-bottom: 15px;" data-i18n="challenges_title">Your 30-Day Challenges</h3>
+                <div id="challenges-list"></div>
+            </div>
+
+            <button class="btn btn-outline" style="width: 100%; margin-top: 30px;" onclick="location.reload()" data-i18n="retake">Retake Test</button>
+        </div>
+    </div>
+
+    <script>
+        const translations = {
+            en: {
+                app_name: "HeartCheck Pro",
+                hero_title: "How Healthy is Your Heart?",
+                hero_subtitle: "Professional-grade cardiovascular assessment in 2 minutes.",
+                start_btn: "Start Assessment",
+                back: "Back",
+                next: "Next",
+                step: "Step",
+                yes: "Yes",
+                no: "No",
+                result_title: "Assessment Result",
+                challenges_title: "Health Improvement Plan",
+                retake: "Retake Test",
+                emergency_msg: "🚨 URGENT: Critical symptoms detected. Please seek medical evaluation immediately.",
+                call_action: "Print Report for Doctor",
+                level_green: "Excellent Health 💚",
+                level_yellow: "Needs Attention 💛",
+                level_orange: "Risk Zone 🧡",
+                level_red: "Critical Zone ❤️",
+                status_green: "Your heart health profile looks strong. Keep up your healthy lifestyle!",
+                status_yellow: "You have minor risk factors. A check-up and lifestyle adjustments are recommended.",
+                status_orange: "Warning: Multiple risk factors identified. Schedule a medical appointment soon.",
+                status_red: "Critical: High risk for cardiovascular issues. Immediate medical consultation is required.",
+                ch_water: "💧 Drink 2L of water daily",
+                ch_walk: "👟 Walk 30 mins every morning",
+                ch_sleep: "😴 Get 8 hours of sleep",
+                ch_stress: "🧘 Practice 5 mins of meditation",
+                q_age: "What is your age?",
+                q_gender: "Gender",
+                q_smoke: "Do you smoke or are exposed to smoking?",
+                q_exercise: "Do you exercise regularly (3+ times/week)?",
+                q_stress: "Do you experience severe stress or poor sleep?",
+                q_bp: "Do you have high blood pressure?",
+                q_diabetes: "Do you have diabetes?",
+                q_chol: "Do you have high cholesterol?",
+                q_chest: "Do you experience chest pain?",
+                q_chest_exert: "Does it appear during physical effort?",
+                q_chest_rad: "Does pain spread to arm, neck or jaw?",
+                q_breath: "Do you experience shortness of breath?",
+                q_palp: "Do you feel heart palpitations?",
+                q_faint: "Have you experienced fainting or severe dizziness?",
+                q_sleep_hrs: "How many hours do you sleep per night?",
+                q_energy: "Do you wake up feeling tired?",
+                q_caffeine: "Do you drink 3+ cups of coffee/energy drinks daily?",
+                q_sitting: "Do you spend 6+ hours sitting daily?",
+                q_skip_meal: "Do you often skip meals or eat unhealthy food?",
+                q_burnout: "Recently experienced emotional burnout?",
+                q_skipped_beat: "Does your heart feel like it 'skips' beats?",
+                q_cold: "Do you experience cold hands or feet frequently?",
+                q_rate: "How would you rate your heart health?",
+                q_worried: "Are you personally worried about your heart health?"
+            },
+            ar: {
+                app_name: "فحص القلب الاحترافي",
+                hero_title: "ما مدى صحة قلبك؟",
+                hero_subtitle: "تقييم قلبي متقدم في دقيقتين فقط.",
+                start_btn: "ابدأ التقييم الآن",
+                back: "السابق",
+                next: "التالي",
+                step: "الخطوة",
+                yes: "نعم",
+                no: "لا",
+                result_title: "نتائج التقييم",
+                challenges_title: "خطة تحسين الصحة",
+                retake: "إعادة الاختبار",
+                emergency_msg: "🚨 تحذير: تم اكتشاف أعراض حرجة. يرجى مراجعة الطبيب فوراً.",
+                call_action: "طباعة التقرير للطبيب",
+                level_green: "صحة ممتازة 💚",
+                level_yellow: "يحتاج اهتمام 💛",
+                level_orange: "منطقة خطر 🧡",
+                level_red: "منطقة حرجة ❤️",
+                status_green: "صحة قلبك تبدو قوية. حافظ على نمط حياتك الصحي!",
+                status_yellow: "لديك بعض عوامل الخطر الطفيفة. نوصي ببعض التعديلات.",
+                status_orange: "تحذير: تم تحديد عوامل خطر متعددة. حدد موعداً طبياً قريباً.",
+                status_red: "حرج: خطر مرتفع للإصابة بمشاكل قلبية. مطلوب استشارة طبية فورية.",
+                ch_water: "💧 اشرب 2 لتر من الماء يومياً",
+                ch_walk: "👟 امشي لمدة 30 دقيقة صباحاً",
+                ch_sleep: "😴 احصل على 8 ساعات من النوم",
+                ch_stress: "🧘 مارس التأمل لمدة 5 دقائق",
+                q_age: "كم عمرك؟",
+                q_gender: "الجنس",
+                q_smoke: "هل تدخن أو تتعرض للتدخين؟",
+                q_exercise: "هل تمارس الرياضة بانتظام؟",
+                q_stress: "هل تعاني من توتر شديد أو قلة نوم؟",
+                q_bp: "هل تعاني من ضغط دم مرتفع؟",
+                q_diabetes: "هل تعاني من السكري؟",
+                q_chol: "هل تعاني من ارتفاع الكوليسترول؟",
+                q_chest: "هل تشعر بألم في الصدر؟",
+                q_chest_exert: "هل يظهر الألم عند بذل جهد بدني؟",
+                q_chest_rad: "هل يمتد الألم إلى الذراع أو الفك؟",
+                q_breath: "هل تعاني من ضيق التنفس؟",
+                q_palp: "هل تشعر بخفقان القلب؟",
+                q_faint: "هل تعرضت للإغماء أو الدوار الشديد؟",
+                q_sleep_hrs: "كم ساعة تنام في الليل؟",
+                q_energy: "هل تستيقظ وأنت تشعر بالتعب؟",
+                q_caffeine: "هل تتناول 3 أكواب قهوة أو مشروبات طاقة؟",
+                q_sitting: "هل تقضي أكثر من 6 ساعات جالساً؟",
+                q_skip_meal: "هل تتناول طعاماً غير صحي بانتظام؟",
+                q_burnout: "هل شعرت بالإرهاق النفسي مؤخراً؟",
+                q_skipped_beat: "هل تشعر أن نبضات قلبك 'تتوقف' أحياناً؟",
+                q_cold: "هل تشعر ببرودة الأطراف باستمرار؟",
+                q_rate: "كيف تقيم صحة قلبك؟",
+                q_worried: "هل أنت قلق شخصياً بشأن صحة قلبك؟"
+            },
+            fr: {
+                app_name: "HeartCheck Pro",
+                hero_title: "Comment va votre cœur ?",
+                hero_subtitle: "Évaluation cardiovasculaire de qualité professionnelle.",
+                start_btn: "Commencer l'évaluation",
+                back: "Retour",
+                next: "Suivant",
+                step: "Étape",
+                yes: "Oui",
+                no: "Non",
+                result_title: "Résultat",
+                challenges_title: "Améliorer ma santé",
+                retake: "Recommencer",
+                emergency_msg: "🚨 URGENT : Symptômes critiques détectés. Consultez un médecin immédiatement.",
+                call_action: "Imprimer pour le médecin",
+                level_green: "Excellente Santé 💚",
+                level_yellow: "Attention Requise 💛",
+                level_orange: "Zone de Risque 🧡",
+                level_red: "Zone Critique ❤️",
+                status_green: "Votre cœur est en pleine forme. Continuez ainsi !",
+                status_yellow: "Facteurs de risque mineurs. Un bilan est recommandé.",
+                status_orange: "Attention : Plusieurs facteurs identifiés. Consultez bientôt.",
+                status_red: "Critique : Risque élevé. Consultation médicale immédiate requise.",
+                ch_water: "💧 Boire 2L d'eau par jour",
+                ch_walk: "👟 30 min de marche matinale",
+                ch_sleep: "😴 8 heures de sommeil",
+                ch_stress: "🧘 5 min de méditation",
+                q_age: "Quel est votre âge ?",
+                q_gender: "Genre",
+                q_smoke: "Fumez-vous ou y êtes-vous exposé ?",
+                q_exercise: "Sport régulier (3+/sem) ?",
+                q_stress: "Stress sévère ou manque de sommeil ?",
+                q_bp: "Hypertension artérielle ?",
+                q_diabetes: "Diabète ?",
+                q_chol: "Cholestérol élevé ?",
+                q_chest: "Douleurs thoraciques ?",
+                q_chest_exert: "Apparaît lors d'un effort ?",
+                q_chest_rad: "Douleur irradiant le bras ou la mâchoire ?",
+                q_breath: "Essoufflement ?",
+                q_palp: "Palpitations cardiaques ?",
+                q_faint: "Évanouissements ou vertiges ?",
+                q_sleep_hrs: "Heures de sommeil ?",
+                q_energy: "Réveil fatigué ?",
+                q_caffeine: "3+ tasses de café/boisson énergisante ?",
+                q_sitting: "Assis 6h+ par jour ?",
+                q_skip_meal: "Alimentation malsaine ?",
+                q_burnout: "Burn-out émotionnel récent ?",
+                q_skipped_beat: "Sensation de battements sautés ?",
+                q_cold: "Mains/pieds froids fréquemment ?",
+                q_rate: "Auto-évaluation de votre cœur ?",
+                q_worried: "Êtes-vous inquiet pour votre cœur ?"
+            }
+        };
+
+        const questions = [
+            // STEP 1
+            { id: 'age', step: 1, type: 'number', label: 'q_age', weight: (v) => v > 50 ? 3 : (v > 40 ? 1 : 0) },
+            { id: 'gender', step: 1, type: 'choice', options: ['Male', 'Female'], label: 'q_gender' },
+            { id: 'smoke', step: 1, type: 'boolean', label: 'q_smoke', weight: 4 },
+            { id: 'exercise', step: 1, type: 'boolean', label: 'q_exercise', weight: (v) => v ? 0 : 2 },
+            
+            // STEP 2
+            { id: 'bp', step: 2, type: 'boolean', label: 'q_bp', weight: 4 },
+            { id: 'diabetes', step: 2, type: 'boolean', label: 'q_diabetes', weight: 4 },
+            { id: 'chol', step: 2, type: 'boolean', label: 'q_chol', weight: 3 },
+
+            // STEP 3 (Smart Branching)
+            { id: 'chest_pain', step: 3, type: 'boolean', label: 'q_chest', weight: 5 },
+            { id: 'chest_exertion', step: 3, type: 'boolean', label: 'q_chest_exert', weight: 4, parent: 'chest_pain' },
+            { id: 'chest_rad', step: 3, type: 'boolean', label: 'q_chest_rad', weight: 5, parent: 'chest_pain' },
+
+            // STEP 4
+            { id: 'breath', step: 4, type: 'boolean', label: 'q_breath', weight: 4 },
+            { id: 'palp', step: 4, type: 'boolean', label: 'q_palp', weight: 2 },
+            { id: 'faint', step: 4, type: 'boolean', label: 'q_faint', weight: 6 },
+
+            // STEP 5 - Lifestyle
+            { id: 'sleep_hrs', step: 5, type: 'number', label: 'q_sleep_hrs', weight: (v) => v < 6 ? 2 : 0 },
+            { id: 'wake_tired', step: 5, type: 'boolean', label: 'q_energy', weight: 1 },
+            { id: 'caffeine', step: 5, type: 'boolean', label: 'q_caffeine', weight: 1 },
+            { id: 'sitting', step: 5, type: 'boolean', label: 'q_sitting', weight: 2 },
+
+            // STEP 6 - Emotional
+            { id: 'stress_severe', step: 6, type: 'boolean', label: 'q_stress', weight: 2 },
+            { id: 'burnout', step: 6, type: 'boolean', label: 'q_burnout', weight: 2 },
+
+            // STEP 7 - Advanced Symptoms
+            { id: 'skipped_beat', step: 7, type: 'boolean', label: 'q_skipped_beat', weight: 2 },
+            { id: 'cold_limbs', step: 7, type: 'boolean', label: 'q_cold', weight: 1 },
+
+            // STEP 8 - Perception
+            { id: 'self_rate', step: 8, type: 'choice', options: ['Excellent', 'Good', 'Average', 'Poor'], label: 'q_rate', weight: (v) => v === 'Poor' ? 3 : 0 },
+            { id: 'worried', step: 8, type: 'boolean', label: 'q_worried', weight: 1 }
+        ];
+
+        let currentStep = 1;
+        const totalSteps = 8;
+        let answers = {};
+        let currentLang = 'en';
+
+        function changeLanguage(lang) {
+            currentLang = lang;
+            document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                el.innerText = translations[lang][key] || el.innerText;
+            });
+            if (!document.getElementById('quiz-screen').classList.contains('hidden')) renderStep();
+        }
+
+        function startQuiz() {
+            document.getElementById('home-screen').classList.add('hidden');
+            document.getElementById('quiz-screen').classList.remove('hidden');
+            renderStep();
+        }
+
+        function renderStep() {
+            const area = document.getElementById('question-area');
+            area.innerHTML = '';
+            document.getElementById('step-label').innerText = `${translations[currentLang].step} ${currentStep} / ${totalSteps}`;
+            document.getElementById('progress-fill').style.width = `${(currentStep/totalSteps)*100}%`;
+
+            const stepQs = questions.filter(q => q.step === currentStep);
+            
+            stepQs.forEach(q => {
+                // Branching check
+                if (q.parent && !answers[q.parent]) return;
+
+                const box = document.createElement('div');
+                box.className = 'question-box';
+                box.innerHTML = `<span class="question-text">${translations[currentLang][q.label]}</span>`;
+
+                if (q.type === 'boolean') {
+                    const grid = document.createElement('div');
+                    grid.className = 'options-grid';
+                    ['yes', 'no'].forEach(opt => {
+                        const btn = document.createElement('button');
+                        btn.className = `option-btn ${answers[q.id] === (opt === 'yes') ? 'selected' : ''}`;
+                        btn.innerText = translations[currentLang][opt];
+                        btn.onclick = () => { answers[q.id] = (opt === 'yes'); renderStep(); };
+                        grid.appendChild(btn);
+                    });
+                    box.appendChild(grid);
+                } else if (q.type === 'number') {
+                    const inp = document.createElement('input');
+                    inp.type = 'number';
+                    inp.value = answers[q.id] || '';
+                    inp.oninput = (e) => answers[q.id] = e.target.value;
+                    box.appendChild(inp);
+                } else if (q.type === 'choice') {
+                    const grid = document.createElement('div');
+                    grid.className = 'options-grid';
+                    q.options.forEach(opt => {
+                        const btn = document.createElement('button');
+                        btn.className = `option-btn ${answers[q.id] === opt ? 'selected' : ''}`;
+                        btn.innerText = opt;
+                        btn.onclick = () => { answers[q.id] = opt; renderStep(); };
+                        grid.appendChild(btn);
+                    });
+                    box.appendChild(grid);
+                }
+                area.appendChild(box);
+            });
+        }
+
+        function moveStep(dir) {
+            if (dir === 1 && currentStep < totalSteps) {
+                currentStep++;
+                renderStep();
+            } else if (dir === -1 && currentStep > 1) {
+                currentStep--;
+                renderStep();
+            } else if (dir === 1 && currentStep === totalSteps) {
+                calculate();
+            }
+        }
+
+        function calculate() {
+            let risk = 0;
+            questions.forEach(q => {
+                const val = answers[q.id];
+                if (val !== undefined) {
+                    if (typeof q.weight === 'function') risk += q.weight(val);
+                    else if (typeof q.weight === 'number' && val === true) risk += q.weight;
+                }
+            });
+
+            // Convert to 100-0 health score
+            let healthScore = 100 - (risk * 2);
+            if (healthScore < 0) healthScore = 5;
+
+            document.getElementById('quiz-screen').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('hidden');
+
+            // Animate score
+            let i = 0;
+            const interval = setInterval(() => {
+                if (i >= healthScore) clearInterval(interval);
+                document.getElementById('score-value').innerText = i;
+                document.getElementById('score-circle').style.strokeDasharray = `${(i/100)*283} 283`;
+                i++;
+            }, 15);
+
+            const badge = document.getElementById('status-badge');
+            const desc = document.getElementById('result-desc');
+            const emergency = document.getElementById('emergency-area');
+
+            if (healthScore > 80) {
+                badge.innerText = translations[currentLang].level_green;
+                badge.style.color = 'var(--success)';
+                desc.innerText = translations[currentLang].status_green;
+            } else if (healthScore > 60) {
+                badge.innerText = translations[currentLang].level_yellow;
+                badge.style.color = 'var(--warning)';
+                desc.innerText = translations[currentLang].status_yellow;
+            } else if (healthScore > 40) {
+                badge.innerText = translations[currentLang].level_orange;
+                badge.style.color = 'var(--primary)';
+                desc.innerText = translations[currentLang].status_orange;
+            } else {
+                badge.innerText = translations[currentLang].level_red;
+                badge.style.color = 'var(--danger)';
+                desc.innerText = translations[currentLang].status_red;
+                emergency.classList.remove('hidden');
+            }
+
+            // Challenges
+            const list = document.getElementById('challenges-list');
+            list.innerHTML = '';
+            const cKeys = ['ch_water', 'ch_walk', 'ch_sleep', 'ch_stress'];
+            cKeys.forEach(k => {
+                list.innerHTML += `<div class="challenge-card">${translations[currentLang][k]}</div>`;
+            });
+        }
+    </script>
+</body>
+</html>

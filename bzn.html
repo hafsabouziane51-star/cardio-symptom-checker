@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="fr" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Circulation Sanguine | Medical Education</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary: #e63946;
+            --secondary: #1d3557;
+            --accent: #457b9d;
+            --bg-light: #f8f9fa;
+            --text-light: #1d3557;
+            --card-bg: rgba(255, 255, 255, 0.8);
+            --glass-border: rgba(255, 255, 255, 0.3);
+            --shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+            --transition: all 0.3s ease;
+        }
+
+        [data-theme="dark"] {
+            --bg-light: #0f172a;
+            --text-light: #f1faee;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --secondary: #a8dadc;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-light);
+            color: var(--text-light);
+            line-height: 1.6;
+            transition: var(--transition);
+            overflow-x: hidden;
+        }
+
+        /* Reading Progress Bar */
+        #progress-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            z-index: 1000;
+        }
+        #progress-bar {
+            height: 100%;
+            background: linear-gradient(to right, var(--primary), var(--accent));
+            width: 0%;
+        }
+
+        /* Navbar */
+        nav {
+            position: sticky;
+            top: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 5%;
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--glass-border);
+            z-index: 900;
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        select, .theme-toggle {
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--accent);
+            background: transparent;
+            color: var(--text-light);
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 4rem 5%;
+            text-align: center;
+            background: linear-gradient(135deg, var(--secondary), var(--accent));
+            color: white;
+            margin-bottom: 2rem;
+        }
+
+        .hero h1 {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            margin-bottom: 1rem;
+        }
+
+        /* Main Content */
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 20px 50px 20px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            animation: slideUp 0.6s ease forwards;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h2 {
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: clamp(1.2rem, 3vw, 1.8rem);
+        }
+
+        h3 {
+            color: var(--accent);
+            margin: 1rem 0;
+            font-size: 1.2rem;
+        }
+
+        /* Flow Visualizer */
+        .flow-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            background: rgba(0,0,0,0.05);
+            padding: 1.5rem;
+            border-radius: 15px;
+            margin: 1rem 0;
+        }
+
+        .flow-step {
+            background: var(--primary);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .arrow {
+            color: var(--accent);
+            font-weight: bold;
+        }
+
+        /* RTL Support */
+        [dir="rtl"] .arrow {
+            transform: rotate(180deg);
+        }
+
+        ul {
+            list-style: none;
+        }
+
+        li {
+            margin-bottom: 10px;
+            padding-left: 25px;
+            position: relative;
+        }
+
+        [dir="ltr"] li::before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: var(--primary);
+        }
+
+        [dir="rtl"] li {
+            padding-left: 0;
+            padding-right: 25px;
+        }
+
+        [dir="rtl"] li::before {
+            content: "←";
+            position: absolute;
+            right: 0;
+            color: var(--primary);
+        }
+
+        .summary-box {
+            text-align: center;
+            font-weight: 700;
+            font-size: 1.2rem;
+            padding: 1.5rem;
+            border: 2px dashed var(--primary);
+            border-radius: 15px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .card { padding: 1.5rem; }
+            nav { padding: 1rem 2%; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="progress-container"><div id="progress-bar"></div></div>
+
+<nav>
+   
+    <div class="controls">
+        <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Theme">
+            <i class="fa-solid fa-moon"></i>
+        </button>
+        <select id="langSwitcher" onchange="changeLanguage(this.value)">
+            <option value="fr">🇫🇷 FR</option>
+            <option value="en">🇬🇧 EN</option>
+            <option value="ar">🇩🇿 AR</option>
+        </select>
+    </div>
+</nav>
+
+<header class="hero">
+    <h1 id="main-title">Circulation sanguine</h1>
+    <p id="hero-subtitle">Comprendre le flux vital du corps humain</p>
+</header>
+
+<main class="container">
+    
+    <!-- Introduction -->
+    <section class="card">
+        <h2 id="intro-h2"><i class="fa-solid fa-circle-info"></i> Introduction</h2>
+        <p id="intro-p">
+            La circulation sanguine est le mouvement du sang dans un système fermé qui passe par le cœur, les poumons et tout le corps.  
+            Elle permet le transport de l’oxygène et des nutriments vers les organes.
+        </p>
+    </section>
+
+    <!-- Pulmonary Circulation -->
+    <section class="card">
+        <h2 id="pulm-h2"><i class="fa-solid fa-lungs"></i> Circulation pulmonaire</h2>
+        <p id="pulm-p">Elle transporte le sang désoxygéné du cœur vers les poumons pour être oxygéné.</p>
+        <h3 id="pulm-path-title">Trajet :</h3>
+        <div class="flow-container" id="pulm-flow">
+            <span class="flow-step">Atrium droit</span>
+            <span class="arrow">→</span>
+            <span class="flow-step">Ventricule droit</span>
+            <span class="arrow">→</span>
+            <span class="flow-step">Artère pulmonaire</span>
+            <span class="arrow">→</span>
+            <span class="flow-step">Poumons</span>
+        </div>
+        <p id="pulm-desc">Dans les poumons, le sang libère le dioxyde de carbone et se charge en oxygène.</p>
+    </section>
+
+    <!-- Systemic Circulation -->
+    <section class="card">
+        <h2 id="syst-h2"><i class="fa-solid fa-body-pulses"></i> Circulation systémique</h2>
+        <p id="syst-p">Elle transporte le sang oxygéné du cœur vers tous les organes du corps.</p>
+        <h3 id="syst-path-title">Trajet :</h3>
+        <div class="flow-container" id="syst-flow">
+            <span class="flow-step">Atrium gauche</span>
+            <span class="arrow">→</span>
+            <span class="flow-step">Ventricule gauche</span>
+            <span class="arrow">→</span>
+            <span class="flow-step">Aorte</span>
+            <span class="arrow">→</span>
+            <span class="flow-step">Organes</span>
+        </div>
+        <p id="syst-desc">Le sang apporte l’oxygène et les nutriments aux tissus, puis revient vers le cœur chargé en CO₂.</p>
+    </section>
+
+    <!-- Return Flow -->
+    <section class="card">
+        <h2 id="return-h2"><i class="fa-solid fa-rotate-left"></i> Retour vers le cœur</h2>
+        <p id="return-p">Le sang désoxygéné revient au cœur par :</p>
+        <ul id="return-list">
+            <li>Veine cave supérieure</li>
+            <li>Veine cave inférieure</li>
+        </ul>
+        <p id="return-footer">Il arrive dans l’atrium droit pour recommencer le cycle.</p>
+    </section>
+
+    <!-- Summary -->
+    <section class="card">
+        <h2 id="summary-h2"><i class="fa-solid fa-diagram-project"></i> Résumé simple</h2>
+        <div class="summary-box" id="summary-content">
+            Corps → Cœur droit → Poumons → Cœur gauche → Corps
+        </div>
+    </section>
+
+    <!-- Key Points -->
+    <section class="card">
+        <h2 id="points-h2"><i class="fa-solid fa-star"></i> Points importants</h2>
+        <ul id="points-list">
+            <li>Deux circulations : pulmonaire et systémique</li>
+            <li>Le cœur fonctionne comme une pompe double</li>
+            <li>Le sang circule en boucle fermée</li>
+            <li>Les valves empêchent le retour du sang</li>
+        </ul>
+    </section>
+
+</main>
+
+<script>
+    const translations = {
+        fr: {
+            title: "Circulation sanguine",
+            subtitle: "Comprendre le flux vital du corps humain",
+            introH2: "Introduction",
+            introP: "La circulation sanguine est le mouvement du sang dans un système fermé qui passe par le cœur, les poumons et tout le corps. Elle permet le transport de l’oxygène et des nutriments vers les organes.",
+            pulmH2: "Circulation pulmonaire (petite circulation)",
+            pulmP: "Elle transporte le sang désoxygéné du cœur vers les poumons pour être oxygéné.",
+            pulmPath: "Trajet :",
+            pulmFlow: ["Atrium droit", "Ventricule droit", "Artère pulmonaire", "Poumons"],
+            pulmDesc: "Dans les poumons, le sang libère le dioxyde de carbone et se charge en oxygène.",
+            systH2: "Circulation systémique (grande circulation)",
+            systP: "Elle transporte le sang oxygéné du cœur vers tous les organes du corps.",
+            systPath: "Trajet :",
+            systFlow: ["Atrium gauche", "Ventricule gauche", "Aorte", "Organes du corps"],
+            systDesc: "Le sang apporte l’oxygène et les nutriments aux tissus, puis revient vers le cœur chargé en CO₂.",
+            returnH2: "Retour du sang vers le cœur",
+            returnP: "Le sang désoxygéné revient au cœur par :",
+            returnList: ["Veine cave supérieure", "Veine cave inférieure"],
+            returnFooter: "Il arrive dans l’atrium droit pour recommencer le cycle.",
+            summaryH2: "Résumé simple",
+            summaryContent: "Corps → Cœur droit → Poumons → Cœur gauche → Corps",
+            pointsH2: "Points importants à retenir",
+            pointsList: ["Deux circulations : pulmonaire et systémique", "Le cœur fonctionne comme une pompe double", "Le sang circule en boucle fermée", "Les valves empêchent le retour du sang"]
+        },
+        en: {
+            title: "Blood Circulation",
+            subtitle: "Understanding the vital flow of the human body",
+            introH2: "Introduction",
+            introP: "Blood circulation is the movement of blood in a closed system through the heart, lungs, and the entire body. It allows the transport of oxygen and nutrients to the organs.",
+            pulmH2: "Pulmonary Circulation (Small Circulation)",
+            pulmP: "It transports deoxygenated blood from the heart to the lungs to be oxygenated.",
+            pulmPath: "Pathway:",
+            pulmFlow: ["Right Atrium", "Right Ventricle", "Pulmonary Artery", "Lungs"],
+            pulmDesc: "In the lungs, blood releases carbon dioxide and picks up oxygen.",
+            systH2: "Systemic Circulation (Great Circulation)",
+            systP: "It transports oxygenated blood from the heart to all organs of the body.",
+            systPath: "Pathway:",
+            systFlow: ["Left Atrium", "Left Ventricle", "Aorta", "Body Organs"],
+            systDesc: "The blood brings oxygen and nutrients to the tissues, then returns to the heart loaded with CO₂.",
+            returnH2: "Return of Blood to the Heart",
+            returnP: "Deoxygenated blood returns to the heart via:",
+            returnList: ["Superior Vena Cava", "Inferior Vena Cava"],
+            returnFooter: "It enters the right atrium to restart the cycle.",
+            summaryH2: "Simple Summary",
+            summaryContent: "Body → Right Heart → Lungs → Left Heart → Body",
+            pointsH2: "Key Points to Remember",
+            pointsList: ["Two circulations: pulmonary and systemic", "The heart functions as a double pump", "Blood circulates in a closed loop", "Valves prevent blood backflow"]
+        },
+        ar: {
+            title: "الدورة الدموية",
+            subtitle: "فهم التدفق الحيوي لجسم الإنسان",
+            introH2: "مقدمة",
+            introP: "الدورة الدموية هي حركة الدم في نظام مغلق يمر عبر القلب والرئتين والجسم كله. وتسمح بنقل الأكسجين والمواد المغذية إلى الأعضاء.",
+            pulmH2: "الدورة الدموية الرئوية (الدورة الصغرى)",
+            pulmP: "تقوم بنقل الدم غير المؤكسج من القلب إلى الرئتين ليتم تزويده بالأكسجين.",
+            pulmPath: "المسار:",
+            pulmFlow: ["الأذين الأيمن", "البطين الأيمن", "الشريان الرئوي", "الرئتين"],
+            pulmDesc: "في الرئتين، يطلق الدم ثاني أكسيد الكربون ويتحمل بالأكسجين.",
+            systH2: "الدورة الدموية الجهازية (الدورة الكبرى)",
+            systP: "تقوم بنقل الدم المؤكسج من القلب إلى جميع أعضاء الجسم.",
+            systPath: "المسار:",
+            systFlow: ["الأذين الأيسر", "البطين الأيسر", "الأبهر (الأورطي)", "أعضاء الجسم"],
+            systDesc: "يوصل الدم الأكسجين والمواد المغذية إلى الأنسجة، ثم يعود إلى القلب محملاً بثاني أكسيد الكربون.",
+            returnH2: "عودة الدم إلى القلب",
+            returnP: "يعود الدم غير المؤكسج إلى القلب عبر:",
+            returnList: ["الوريد الأجوف العلوي", "الوريد الأجوف السفلي"],
+            returnFooter: "يصل إلى الأذين الأيمن لتبدأ الدورة من جديد.",
+            summaryH2: "ملخص بسيط",
+            summaryContent: "الجسم ← القلب الأيمن ← الرئتين ← القلب الأيسر ← الجسم",
+            pointsH2: "نقاط مهمة يجب تذكرها",
+            pointsList: ["دورتان: رئوية وجهازية", "القلب يعمل كمضخة مزدوجة", "يدور الدم في حلقة مغلقة", "الصمامات تمنع عودة الدم للخلف"]
+        }
+    };
+
+    function changeLanguage(lang) {
+        const data = translations[lang];
+        const isRtl = lang === 'ar';
+        
+        document.documentElement.dir = isRtl ? 'rtl' : 'ltr';
+        document.documentElement.lang = lang;
+
+        // Update titles and text
+        document.getElementById('main-title').innerText = data.title;
+        document.getElementById('hero-subtitle').innerText = data.subtitle;
+        document.getElementById('intro-h2').innerHTML = `<i class="fa-solid fa-circle-info"></i> ${data.introH2}`;
+        document.getElementById('intro-p').innerText = data.introP;
+        
+        document.getElementById('pulm-h2').innerHTML = `<i class="fa-solid fa-lungs"></i> ${data.pulmH2}`;
+        document.getElementById('pulm-p').innerText = data.pulmP;
+        document.getElementById('pulm-path-title').innerText = data.pulmPath;
+        document.getElementById('pulm-desc').innerText = data.pulmDesc;
+
+        document.getElementById('syst-h2').innerHTML = `<i class="fa-solid fa-body-pulses"></i> ${data.systH2}`;
+        document.getElementById('syst-p').innerText = data.systP;
+        document.getElementById('syst-path-title').innerText = data.systPath;
+        document.getElementById('syst-desc').innerText = data.systDesc;
+
+        document.getElementById('return-h2').innerHTML = `<i class="fa-solid fa-rotate-left"></i> ${data.returnH2}`;
+        document.getElementById('return-p').innerText = data.returnP;
+        document.getElementById('return-footer').innerText = data.returnFooter;
+
+        document.getElementById('summary-h2').innerHTML = `<i class="fa-solid fa-diagram-project"></i> ${data.summaryH2}`;
+        document.getElementById('summary-content').innerText = data.summaryContent;
+
+        document.getElementById('points-h2').innerHTML = `<i class="fa-solid fa-star"></i> ${data.pointsH2}`;
+
+        // Update flows
+        updateFlow('pulm-flow', data.pulmFlow, isRtl);
+        updateFlow('syst-flow', data.systFlow, isRtl);
+
+        // Update lists
+        updateList('return-list', data.returnList);
+        updateList('points-list', data.pointsList);
+    }
+
+    function updateFlow(elementId, steps, isRtl) {
+        const container = document.getElementById(elementId);
+        const arrow = isRtl ? '←' : '→';
+        container.innerHTML = steps.map((step, index) => `
+            <span class="flow-step">${step}</span>
+            ${index < steps.length - 1 ? `<span class="arrow">${arrow}</span>` : ''}
+        `).join('');
+    }
+
+    function updateList(elementId, items) {
+        const list = document.getElementById(elementId);
+        list.innerHTML = items.map(item => `<li>${item}</li>`).join('');
+    }
+
+    // Dark Mode Toggle
+    function toggleTheme() {
+        const body = document.body;
+        const icon = document.querySelector('.theme-toggle i');
+        if (body.getAttribute('data-theme') === 'dark') {
+            body.removeAttribute('data-theme');
+            icon.className = 'fa-solid fa-moon';
+        } else {
+            body.setAttribute('data-theme', 'dark');
+            icon.className = 'fa-solid fa-sun';
+        }
+    }
+
+    // Scroll Progress Bar
+    window.onscroll = function() {
+        const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+        const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        const scrolled = (winScroll / height) * 100;
+        document.getElementById("progress-bar").style.width = scrolled + "%";
+    };
+
+    // Initialize with French
+    changeLanguage('fr');
+</script>
+
+</body>
+</html>

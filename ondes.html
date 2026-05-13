@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="fr" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>Analyse ECG | Système de Conduction</title>
+    
+    <!-- Google Fonts: Inter for UI, Noto Sans Arabic for RTL -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Noto+Sans+Arabic:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            /* Medical Color Palette */
+            --primary: #e63946;
+            --secondary: #1d3557;
+            --accent: #457b9d;
+            --bg: #f8f9fa;
+            --text: #1d3557;
+            --glass: rgba(255, 255, 255, 0.8);
+            --border: rgba(255, 255, 255, 0.4);
+            --shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
+            --radius: 20px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+            /* Fluid Typography */
+            --font-h1: clamp(1.8rem, 5vw, 3rem);
+            --font-h2: clamp(1.4rem, 4vw, 2rem);
+            --font-body: clamp(1rem, 2vw, 1.15rem);
+        }
+
+        [data-theme="dark"] {
+            --bg: #0f172a;
+            --text: #f1faee;
+            --glass: rgba(30, 41, 59, 0.8);
+            --border: rgba(255, 255, 255, 0.1);
+            --secondary: #a8dadc;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            transition: background-color 0.4s ease;
+            overflow-x: hidden;
+        }
+
+        [lang="ar"] body { font-family: 'Noto Sans Arabic', sans-serif; }
+
+        /* Navigation - Optimized for Touch */
+        nav {
+            position: fixed; top: 0; width: 100%;
+            height: 70px; display: flex; justify-content: space-between; align-items: center;
+            padding: 0 5%; background: var(--glass);
+            backdrop-filter: blur(15px); border-bottom: 1px solid var(--border);
+            z-index: 1000; box-shadow: var(--shadow);
+        }
+
+        .logo { font-weight: 700; font-size: 1.3rem; color: var(--primary); display: flex; align-items: center; gap: 10px; }
+
+        .controls { display: flex; gap: 10px; }
+
+        select, .theme-toggle {
+            min-height: 44px; /* Touch target size */
+            padding: 0 15px; border-radius: 12px; border: 1px solid var(--accent);
+            background: transparent; color: var(--text); cursor: pointer; font-weight: 600;
+        }
+
+        /* Hero Section */
+        .container { max-width: 1200px; margin: 100px auto 60px; padding: 0 20px; }
+
+        h1 { font-size: var(--font-h1); text-align: center; margin-bottom: 2rem; color: var(--secondary); }
+
+        /* Diagram Card */
+        .main-card {
+            background: var(--glass); border-radius: var(--radius); padding: 2rem;
+            border: 1px solid var(--border); box-shadow: var(--shadow);
+            margin-bottom: 2.5rem; text-align: center;
+        }
+
+        .ecg-img {
+            width: 100%; max-width: 850px; height: auto;
+            border-radius: 12px; margin-bottom: 1rem;
+            filter: drop-shadow(0 4px 10px rgba(0,0,0,0.1));
+        }
+
+        .caption { font-size: 0.9rem; font-style: italic; opacity: 0.8; }
+
+        /* Flexible Grid System */
+        .wave-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+            gap: 20px;
+        }
+
+        .wave-card {
+            background: var(--glass); padding: 1.8rem; border-radius: var(--radius);
+            border-left: 6px solid var(--primary); box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+
+        [dir="rtl"] .wave-card { border-left: none; border-right: 6px solid var(--primary); }
+
+        .wave-card:hover { transform: translateY(-8px); border-color: var(--accent); }
+
+        .wave-card h3 { color: var(--primary); font-size: 1.3rem; margin-bottom: 10px; display: flex; align-items: center; gap: 12px; }
+
+        .wave-card p { font-size: var(--font-body); opacity: 0.9; }
+
+        .type-tag {
+            display: inline-block; padding: 3px 10px; background: rgba(230, 57, 70, 0.1);
+            color: var(--primary); border-radius: 6px; font-size: 0.75rem; font-weight: 700; margin-bottom: 12px;
+        }
+
+        #progress-bar {
+            position: fixed; top: 0; left: 0; height: 5px; 
+            background: linear-gradient(90deg, var(--primary), var(--accent)); 
+            width: 0%; z-index: 2000;
+        }
+
+        /* Mobile Adjustments */
+        @media (max-width: 600px) {
+            .container { margin-top: 90px; }
+            .logo span { display: none; }
+            .wave-card { padding: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+
+<nav>
+   
+    <div class="controls">
+        <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle Dark Mode">
+            <i class="fa-solid fa-moon"></i>
+        </button>
+        <select id="langSwitcher" onchange="translatePage(this.value)">
+            <option value="fr">Français</option>
+            <option value="en">English</option>
+            <option value="ar">العربية</option>
+        </select>
+    </div>
+</nav>
+
+<main class="container">
+    <h1 id="page-title">Ondes d'électrocardiographie (ECG)</h1>
+
+    <article class="main-card">
+        <img src="cvs_ecg_waves_fr.webp" alt="ECG Diagram" class="ecg-img">
+        <p class="caption" id="diagram-cap">Visualisation des ondes, segments et intervalles du cycle cardiaque.</p>
+    </article>
+
+    <div class="wave-grid" id="wave-grid">
+        <!-- Content injected by JS -->
+    </div>
+</main>
+
+<script>
+    const db = {
+        fr: {
+            title: "Ondes d'électrocardiographie (ECG)",
+            caption: "Morphologie standard d'un complexe ECG et ses intervalles associés.",
+            waves: [
+                { name: "Onde P", type: "Atrial", text: "Activation (dépolarisation) des oreillettes." },
+                { name: "Espace PR", type: "Intervalle", text: "Temps entre le début de la dépolarisation de l'oreillette et celle du ventricule." },
+                { name: "Complexe QRS", type: "Ventriculaire", text: "Dépolarisation des ventricules, composée des ondes Q, R et S." },
+                { name: "Intervalle QT", type: "Intervalle", text: "Temps entre le début de la dépolarisation et la fin de la repolarisation ventriculaire." },
+                { name: "Intervalle R-R", type: "Rythme", text: "Temps entre 2 complexes QRS (utilisé pour calculer la fréquence)." },
+                { name: "Onde T", type: "Ventriculaire", text: "Représente la repolarisation ventriculaire." },
+                { name: "Segment ST-T", type: "Repolarisation", text: "Le segment ST plus l'onde T représentent la repolarisation ventriculaire." },
+                { name: "Onde U", type: "Post-Dép", text: "Probablement post-dépolarisation (relaxation) des ventricules." }
+            ]
+        },
+        en: {
+            title: "Electrocardiography (ECG) Waves",
+            caption: "Standard morphology of an ECG complex and associated intervals.",
+            waves: [
+                { name: "P Wave", type: "Atrial", text: "Activation (depolarization) of the atria." },
+                { name: "PR Interval", type: "Interval", text: "Time between the start of atrial and ventricular depolarization." },
+                { name: "QRS Complex", type: "Ventricular", text: "Ventricular depolarization, consisting of Q, R, and S waves." },
+                { name: "QT Interval", type: "Interval", text: "Time between the start of depolarization and the end of ventricular repolarization." },
+                { name: "R-R Interval", type: "Rhythm", text: "Time between two successive QRS complexes." },
+                { name: "T Wave", type: "Ventricular", text: "Represents ventricular repolarization." },
+                { name: "ST-T Segment", type: "Repolarization", text: "The ST segment plus the T wave represent ventricular repolarization." },
+                { name: "U Wave", type: "Post-Dep", text: "Likely ventricular post-depolarization (relaxation)." }
+            ]
+        },
+        ar: {
+            title: "موجات تخطيط كهربائية القلب (ECG)",
+            caption: "المورفولوجيا القياسية لمركب ECG والفترات المرتبطة به.",
+            waves: [
+                { name: "موجة P", type: "أذيني", text: "تنشيط (إزالة استقطاب) الأذينين." },
+                { name: "فترة PR", type: "فترة", text: "الوقت بين بداية إزالة استقطاب الأذين وبداية إزالة استقطاب البطين." },
+                { name: "مركب QRS", type: "بطيني", text: "إزالة استقطاب البطينين، وتتكون من موجات Q و R و S." },
+                { name: "فترة QT", type: "فترة", text: "الوقت بين بداية إزالة استقطاب البطين ونهاية إعادة استقطابه." },
+                { name: "فترة R-R", type: "إيقاع", text: "الوقت بين مركبي QRS متتاليين." },
+                { name: "موجة T", type: "بطيني", text: "تمثل إعادة استقطاب البطينين." },
+                { name: "قطعة ST-T", type: "إعادة استقطاب", text: "تمثل قطعة ST بالإضافة إلى موجة T مرحلة إعادة استقطاب البطين." },
+                { name: "موجة U", type: "ما بعد التنشيط", text: "على الأرجح هي مرحلة ما بعد إزالة استقطاب (استرخاء) البطينين." }
+            ]
+        }
+    };
+
+    function translatePage(lang) {
+        const data = db[lang];
+        document.documentElement.lang = lang;
+        document.documentElement.dir = (lang === 'ar') ? 'rtl' : 'ltr';
+        
+        document.getElementById('page-title').innerText = data.title;
+        document.getElementById('diagram-cap').innerText = data.caption;
+        
+        const grid = document.getElementById('wave-grid');
+        grid.innerHTML = data.waves.map(w => `
+            <div class="wave-card">
+                <span class="type-tag">${w.type}</span>
+                <h3><i class="fa-solid fa-waveform"></i> ${w.name}</h3>
+                <p>${w.text}</p>
+            </div>
+        `).join('');
+    }
+
+    function toggleTheme() {
+        const body = document.body;
+        const isDark = body.getAttribute('data-theme') === 'dark';
+        body.setAttribute('data-theme', isDark ? 'light' : 'dark');
+        document.querySelector('.theme-toggle i').className = isDark ? 'fa-solid fa-moon' : 'fa-solid fa-sun';
+    }
+
+    window.onscroll = () => {
+        const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+        const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        document.getElementById("progress-bar").style.width = (winScroll / height) * 100 + "%";
+    };
+
+    // Initialize
+    translatePage('fr');
+</script>
+</body>
+</html>

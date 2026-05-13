@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intelligence Hub | AI ECG Academy</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-base: #020305;
+            --card-bg: rgba(10, 12, 16, 0.7);
+            --accent-red: #ff3333;
+            --accent-glow: rgba(255, 51, 51, 0.2);
+            --ai-cyan: #00f2ff;
+            --text-main: #e2e8f0;
+            --text-muted: #64748b;
+            --glass-border: rgba(255, 255, 255, 0.06);
+            --transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: default;
+        }
+
+        /* --- BACKGROUND HOLOGRAPHY --- */
+        .hologram-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at var(--mx, 50%) var(--my, 50%), var(--accent-glow) 0%, transparent 60%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .particles-canvas {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -2;
+            opacity: 0.2;
+        }
+
+        /* --- HEADER & DYNAMIC TITLE --- */
+        header {
+            width: 100%;
+            max-width: 1000px;
+            padding: 5rem 2rem 4rem 2rem;
+            text-align: center;
+        }
+
+        .ai-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(0, 242, 255, 0.03);
+            border: 1px solid rgba(0, 242, 255, 0.15);
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem;
+            color: var(--ai-cyan);
+            letter-spacing: 2px;
+            margin-bottom: 2rem;
+            backdrop-filter: blur(5px);
+        }
+
+        .pulse-dot {
+            width: 6px; height: 6px;
+            background: var(--ai-cyan);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--ai-cyan);
+            animation: pulse-blink 2s infinite;
+        }
+
+        @keyframes pulse-blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.2; } }
+
+        /* DUAL-TONE DYNAMIC TITLE */
+  .dynamic-title {
+    font-size: clamp(2.5rem, 10vw, 4.5rem);
+    font-weight: 800;
+    letter-spacing: -2.5px;
+    margin-bottom: 1rem;
+
+    background: linear-gradient(
+        90deg, 
+        #ffffff 0%, 
+        #ffffff 35%, 
+        var(--accent-red) 50%, 
+        #ffffff 65%, 
+        #ffffff 100%
+    );
+
+    background-size: 200% auto;
+
+    /* دعم كامل للمتصفحات */
+    -webkit-background-clip: text;
+    background-clip: text;
+
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+
+    animation: title-flow 5s linear infinite;
+
+    filter: drop-shadow(0 0 15px rgba(255, 51, 51, 0.1));
+}
+
+/* Fallback مهم للمتصفحات التي لا تدعم text-clip */
+@supports not (-webkit-background-clip: text) {
+    .dynamic-title {
+        color: white;
+        background: none;
+    }
+}
+
+@keyframes title-flow {
+    0% { background-position: 200% center; }
+    100% { background-position: -200% center; }
+}
+
+        .subtitle {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+        }
+
+        /* --- CURRICULUM CORE --- */
+        .curriculum {
+            width: 100%;
+            max-width: 900px;
+            padding: 0 1.5rem 12rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+        }
+
+        .level-card {
+            background: var(--card-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            backdrop-filter: blur(20px);
+            transition: var(--transition);
+            overflow: hidden;
+        }
+
+        .level-card:hover {
+            border-color: rgba(255, 51, 51, 0.3);
+            transform: scale(1.01);
+        }
+
+        .level-card.active {
+            border-color: var(--accent-red);
+            background: rgba(15, 18, 24, 0.9);
+        }
+
+        .level-header {
+            padding: 2rem 2.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .level-info {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .level-id {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            color: var(--accent-red);
+            font-size: 1.3rem;
+            opacity: 0.4;
+        }
+
+        .level-title {
+            font-size: clamp(1.1rem, 4vw, 1.3rem);
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+
+        .chevron {
+            color: var(--text-muted);
+            transition: transform 0.5s var(--transition);
+        }
+
+        .level-card.active .chevron {
+            transform: rotate(180deg);
+            color: var(--accent-red);
+        }
+
+        /* --- LESSON GRID --- */
+        .level-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .level-card.active .level-body {
+            max-height: 1000px;
+            border-top: 1px solid var(--glass-border);
+        }
+
+        .lessons-grid {
+            padding: 2.5rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+        }
+
+        .lesson-node {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--glass-border);
+            padding: 16px 20px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: 0.3s;
+        }
+
+        .lesson-node:hover {
+            background: rgba(255, 51, 51, 0.08);
+            border-color: var(--accent-red);
+            padding-left: 28px;
+        }
+
+        .lesson-node::before {
+            content: "•";
+            color: var(--accent-red);
+            font-weight: bold;
+        }
+
+        /* --- CONTINUOUS ECG MONITOR --- */
+        .ecg-footer {
+            position: fixed;
+            bottom: 0; left: 0; width: 100%;
+            height: 100px;
+            pointer-events: none;
+            z-index: 100;
+            background: linear-gradient(to top, var(--bg-base) 20%, transparent);
+        }
+
+        .ecg-line {
+            fill: none;
+            stroke: var(--accent-red);
+            stroke-width: 2.5;
+            filter: drop-shadow(0 0 10px var(--accent-red));
+            stroke-dasharray: 2000;
+            stroke-dashoffset: 2000;
+            animation: ecg-sweep 8s linear infinite;
+        }
+
+        @keyframes ecg-sweep { to { stroke-dashoffset: 0; } }
+
+        /* --- MOBILE ADAPTABILITY --- */
+        @media (max-width: 768px) {
+            header { padding: 4rem 1.5rem 2.5rem 1.5rem; }
+            .level-header { padding: 1.5rem; }
+            .lessons-grid { grid-template-columns: 1fr; padding: 1.5rem; }
+        }
+/* Container to hold icons together without shifting the header layout */
+.level-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px; /* Spacing between the lock and the chevron */
+}
+
+/* Subtle, professional lock styling */
+.lock-indicator {
+    font-size: 0.85rem;
+    color: #64748b; /* Muted slate gray */
+    opacity: 0.5;    /* Visual hint that it is locked/restricted */
+    pointer-events: none; /* Ensures the icon doesn't interfere with clicks */
+}
+
+/* Ensure the lock doesn't rotate with the chevron if you have rotation logic */
+.level-actions .fa-lock {
+    transform: none !important;
+}
+
+
+
+    </style>
+</head>
+<body>
+
+    <div class="hologram-overlay" id="hologram"></div>
+    <canvas class="particles-canvas" id="particles"></canvas>
+
+    <header>
+        <div class="ai-indicator">
+            <div class="pulse-dot"></div>
+            SYSTEM STATUS: SYNCHRONIZED
+        </div>
+        <h1 class="dynamic-title">Intelligence Hub</h1>
+        <p class="subtitle">Next-Gen ECG Academy</p>
+    </header>
+
+    <div class="curriculum">
+        <!-- Level 1 -->
+        <div class="level-card active">
+            <div class="level-header" onclick="toggleLevel(this)">
+                <div class="level-info">
+                    <span class="level-id">01</span>
+                    <span class="level-title">Heart Basics & ECG Intro</span>
+                </div>
+                <i class="fas fa-chevron-down chevron"></i>
+            </div>
+            <div class="level-body">
+                <div class="lessons-grid">
+                 <a href="hafsa.html" class="lesson-node" style="text-decoration:none; color:inherit;">
+    Anatomie du cœur
+</a>
+            <a href="walaa.html" class="lesson-node" style="text-decoration:none; color:inherit;">
+Fonction du cœur</a>
+
+            <a href="bzn.html" class="lesson-node" style="text-decoration:none; color:inherit;">
+ Circulation sanguine  </a>
+                              <a href="LOLO.html" class="lesson-node" style="text-decoration:none; color:inherit;">
+  Principe ECG</a>
+        </div>
+
+       
+    </div>
+</div>
+
+      <!-- Level 2 -->
+<div class="level-card">
+    <div class="level-header" onclick="toggleLevel(this)">
+        <div class="level-info">
+            <span class="level-id">02</span>
+            <span class="level-title">ECG Parameters</span>
+        </div>
+        <i class="fas fa-chevron-down chevron"></i>
+    </div>
+
+    <div class="level-body">
+        <div class="lessons-grid">
+
+            <a href="ondes.html" class="lesson-node" style="text-decoration:none; color:inherit;">
+                Onde P, Complexe QRS, Onde T
+            </a>
+ <a href="calcule.html" class="lesson-node" style="text-decoration:none; color:inherit;">
+               Calculs ECG
+            </a>
+
+
+
+        </div>
+    </div>
+</div>
+<!-- Level 3 -->
+        <div class="level-card locked">
+            <div class="level-header" onclick="toggleLevel(this)">
+                <div class="level-info">
+                    <span class="level-id">03</span>
+                    <span class="level-title">Normal ECG Reading</span>
+                </div>
+                <div class="level-actions">
+                    <i class="fas fa-lock lock-icon"></i>
+                    <i class="fas fa-chevron-down chevron"></i>
+                </div>
+            </div>
+            <div class="level-body">
+                <div class="lessons-grid">
+                    <div class="lesson-node">ECG normal adulte</div>
+                    <div class="lesson-node">Axe normal</div>
+                    <div class="lesson-node">Rythme sinusal normal</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Level 4 -->
+        <div class="level-card locked">
+            <div class="level-header" onclick="toggleLevel(this)">
+                <div class="level-info">
+                    <span class="level-id">04</span>
+                    <span class="level-title">Rhythm Disorders</span>
+                </div>
+                <div class="level-actions">
+                    <i class="fas fa-lock lock-icon"></i>
+                    <i class="fas fa-chevron-down chevron"></i>
+                </div>
+            </div>
+            <div class="level-body">
+                <div class="lessons-grid">
+                    <div class="lesson-node">Tachycardie</div>
+                    <div class="lesson-node">Bradycardie</div>
+                    <div class="lesson-node">Fibrillation auriculaire</div>
+                    <div class="lesson-node">Flutter auriculaire</div>
+                    <div class="lesson-node">Extrasystoles</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Level 5 -->
+        <div class="level-card locked">
+            <div class="level-header" onclick="toggleLevel(this)">
+                <div class="level-info">
+                    <span class="level-id">05</span>
+                    <span class="level-title">Blocks & Conduction</span>
+                </div>
+                <div class="level-actions">
+                    <i class="fas fa-lock lock-icon"></i>
+                    <i class="fas fa-chevron-down chevron"></i>
+                </div>
+            </div>
+            <div class="level-body">
+                <div class="lessons-grid">
+                    <div class="lesson-node">BAV 1er, 2e, 3e degré</div>
+                    <div class="lesson-node">Bloc de branche droit/gauche</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Level 6 -->
+        <div class="level-card locked">
+            <div class="level-header" onclick="toggleLevel(this)">
+                <div class="level-info">
+                    <span class="level-id">06</span>
+                    <span class="level-title">Ischemia & Infarction</span>
+                </div>
+                <div class="level-actions">
+                    <i class="fas fa-lock lock-icon"></i>
+                    <i class="fas fa-chevron-down chevron"></i>
+                </div>
+            </div>
+            <div class="level-body">
+                <div class="lessons-grid">
+                    <div class="lesson-node">STEMI</div>
+                    <div class="lesson-node">NSTEMI</div>
+                    <div class="lesson-node">Ischémie</div>
+                    <div class="lesson-node">Onde Q pathologique</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Level 7 -->
+        <div class="level-card locked">
+            <div class="level-header" onclick="toggleLevel(this)">
+                <div class="level-info">
+                    <span class="level-id">07</span>
+                    <span class="level-title">Hypertrophy & Enlargement</span>
+                </div>
+                <div class="level-actions">
+                    <i class="fas fa-lock lock-icon"></i>
+                    <i class="fas fa-chevron-down chevron"></i>
+                </div>
+            </div>
+            <div class="level-body">
+                <div class="lessons-grid">
+                    <div class="lesson-node">HVG</div>
+                    <div class="lesson-node">HVD</div>
+                    <div class="lesson-node">Dilatation auriculaire</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Level 8 -->
+        <div class="level-card locked">
+            <div class="level-header" onclick="toggleLevel(this)">
+                <div class="level-info">
+                    <span class="level-id">08</span>
+                    <span class="level-title">Full ECG Interpretation</span>
+                </div>
+                <div class="level-actions">
+                    <i class="fas fa-lock lock-icon"></i>
+                    <i class="fas fa-chevron-down chevron"></i>
+                </div>
+            </div>
+            <div class="level-body">
+                <div class="lessons-grid">
+                    <div class="lesson-node">Méthode complète d’analyse étape par étape</div>
+                </div>
+            </div>
+        </div>
+
+    <!-- ECG Animation Footer -->
+    <div class="ecg-footer">
+        <svg style="width:100%; height:100%" viewBox="0 0 1000 100" preserveAspectRatio="none">
+            <path class="ecg-line" d="M0,50 L80,50 L85,40 L95,60 L100,50 L150,50 L160,10 L175,90 L190,50 L240,50 L250,40 L270,40 L280,50 L360,50 L365,40 L375,60 L380,50 L430,50 L440,10 L455,90 L470,50 L520,50 L530,40 L550,40 L560,50 L640,50 L645,40 L655,60 L660,50 L710,50 L720,10 L735,90 L750,50 L800,50 L810,40 L830,40 L840,50 L920,50 L925,40 L935,60 L940,50 L1000,50" />
+        </svg>
+    </div>
+
+    <script>
+        // Interactive Mouse Glow Tracking
+        document.addEventListener('mousemove', (e) => {
+            const x = (e.clientX / window.innerWidth) * 100;
+            const y = (e.clientY / window.innerHeight) * 100;
+            document.documentElement.style.setProperty('--mx', `${x}%`);
+            document.documentElement.style.setProperty('--my', `${y}%`);
+        });
+
+        // Module Toggle Logic
+        function toggleLevel(header) {
+            const card = header.parentElement;
+            const isActive = card.classList.contains('active');
+            document.querySelectorAll('.level-card').forEach(c => c.classList.remove('active'));
+            if(!isActive) card.classList.add('active');
+        }
+
+        // Ambient Particle System
+        const canvas = document.getElementById('particles');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function initParticles() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            particles = [];
+            for(let i=0; i<40; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    radius: Math.random() * 1.5,
+                    vy: Math.random() * 0.3 + 0.1
+                });
+            }
+        }
+
+        function drawParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+            particles.forEach(p => {
+                p.y -= p.vy;
+                if(p.y < 0) p.y = canvas.height;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                ctx.fill();
+            });
+            requestAnimationFrame(drawParticles);
+        }
+
+        window.addEventListener('resize', initParticles);
+        initParticles();
+        drawParticles();
+    </script>
+</body>
+</html>

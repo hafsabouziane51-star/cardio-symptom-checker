@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="fr" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CardioAnatomy Pro | Plateforme d'Éducation Médicale</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+Arabic:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome for Medical Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            /* Medical Color Palette */
+            --primary-red: #e63946;
+            --secondary-blue: #1d3557;
+            --accent-teal: #457b9d;
+            --ecg-green: #00ff41;
+            
+            /* Theme Variables - Default Light */
+            --bg-body: #f8fafc;
+            --bg-card: rgba(255, 255, 255, 0.8);
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border-color: rgba(226, 232, 240, 0.8);
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+            --nav-bg: rgba(255, 255, 255, 0.8);
+        }
+
+        [data-theme="dark"] {
+            --bg-body: #0f172a;
+            --bg-card: rgba(30, 41, 59, 0.7);
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --border-color: rgba(51, 65, 85, 0.8);
+            --glass-bg: rgba(15, 23, 42, 0.7);
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+            --nav-bg: rgba(15, 23, 42, 0.8);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', 'Noto Sans Arabic', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        /* --- UI Components --- */
+
+        /* Progress Bar */
+        #reading-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 4px;
+            background: linear-gradient(to right, var(--primary-red), var(--accent-teal));
+            z-index: 9999;
+        }
+
+        /* Glassmorphism Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1rem 2rem;
+            background: var(--nav-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-weight: 800;
+            font-size: 1.4rem;
+            color: var(--primary-red);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-controls {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .btn-toggle {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 0.5rem;
+            border-radius: 50%;
+            cursor: pointer;
+            color: var(--text-main);
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        select#langSelect {
+            background: var(--bg-card);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            padding: 0.4rem 0.8rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        /* --- Hero Section --- */
+        .hero {
+            padding: 180px 1rem 100px;
+            text-align: center;
+            background: radial-gradient(circle at top right, rgba(230, 57, 70, 0.05), transparent),
+                        radial-gradient(circle at bottom left, rgba(69, 123, 157, 0.05), transparent);
+            position: relative;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 8vw, 4.5rem);
+            font-weight: 900;
+            margin-bottom: 1.5rem;
+            letter-spacing: -2px;
+        }
+
+        .hero .ecg-line {
+            width: 200px;
+            height: 40px;
+            margin: 0 auto;
+            stroke: var(--primary-red);
+            stroke-width: 2;
+            fill: none;
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            animation: ecg-draw 4s linear infinite;
+        }
+
+        @keyframes ecg-draw {
+            to { stroke-dashoffset: 0; }
+        }
+
+        /* --- Main Layout --- */
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 1.5rem 100px;
+        }
+
+        .section-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 3rem;
+            margin-bottom: 3rem;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            transform: translateY(30px);
+            opacity: 0;
+            transition: all 0.8s ease-out;
+        }
+
+        .section-card.reveal {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        h2 {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary-red);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        p {
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+            color: var(--text-main);
+            text-align: justify;
+        }
+
+        /* --- Visuals --- */
+        .image-wrapper {
+            position: relative;
+            margin: 2.5rem 0;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+        }
+
+        .image-wrapper img {
+            width: 100%;
+            display: block;
+            transition: transform 0.5s ease;
+            cursor: zoom-in;
+        }
+
+        .image-wrapper:hover img {
+            transform: scale(1.05);
+        }
+
+        /* --- Modern Table --- */
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            margin: 2rem 0;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--bg-card);
+            min-width: 600px;
+        }
+
+        th {
+            background: var(--primary-red);
+            color: white;
+            padding: 1.2rem;
+            text-align: left;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+        }
+
+        td {
+            padding: 1.2rem;
+            border-bottom: 1px solid var(--border-color);
+            vertical-align: top;
+            font-size: 0.95rem;
+        }
+
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: rgba(230, 57, 70, 0.03); }
+
+        /* --- Utilities --- */
+        .badge {
+            display: inline-block;
+            padding: 0.2rem 0.8rem;
+            background: rgba(230, 57, 70, 0.1);
+            color: var(--primary-red);
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .floating-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: var(--primary-red);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            opacity: 0;
+            visibility: hidden;
+            transition: 0.3s;
+            z-index: 1000;
+            box-shadow: 0 5px 15px rgba(230, 57, 70, 0.3);
+        }
+
+        .floating-top.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* RTL Adjustments */
+        [dir="rtl"] th, [dir="rtl"] td {
+            text-align: right;
+        }
+        [dir="rtl"] .floating-top {
+            right: auto;
+            left: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .section-card { padding: 1.5rem; }
+            .hero { padding-top: 120px; }
+            nav { padding: 0.8rem 1rem; }
+            .logo span { display: none; }
+        }
+    </style>
+</head>
+<body data-theme="dark">
+
+    <div id="reading-progress"></div>
+
+    <nav>
+       
+        <div class="nav-controls">
+            <select id="langSelect" onchange="changeLanguage()">
+                <option value="fr">🇫🇷 Français</option>
+                <option value="en">🇺🇸 English</option>
+                <option value="ar">🇩🇿 العربية</option>
+            </select>
+            <button class="btn-toggle" onclick="toggleTheme()" title="Changer le thème">
+                <i class="fa-solid fa-moon" id="themeIcon"></i>
+            </button>
+        </div>
+    </nav>
+
+    <header class="hero">
+        <svg class="ecg-line" viewBox="0 0 200 40">
+            <polyline points="0,20 20,20 25,5 35,35 40,20 60,20 65,5 75,35 80,20 100,20 105,0 115,40 120,20 140,20 145,10 155,30 160,20 200,20" />
+        </svg>
+        <h1 id="mainTitle" data-content="h1-1">🫀 Anatomy du Cœur</h1>
+        <p style="max-width: 600px; margin: 0 auto; color: var(--text-muted);" id="subtitle" data-content="sub">
+            Exploration approfondie de l'organe central de la vie.
+        </p>
+    </header>
+
+    <main class="container">
+        
+        <!-- Introduction Section -->
+        <section class="section-card" id="intro">
+            <span class="badge" data-content="badge-1">Généralités</span>
+            <h2 id="h2-1" data-content="h2-1">Cœur</h2>
+            <p id="p-1" data-content="p-1">
+                Le cœur est un organe musculaire qui pompe le sang à travers le corps en le faisant circuler à travers le système circulatoire/vasculaire. Il se trouve au milieu du médiastin, enveloppé d’un sac séreux constitué de deux couches, appelé le péricarde. Le cœur est en forme de pyramide à base carrée orientée comme si elle était tombée sur l’une de ses faces, sa base faisant ainsi face à la paroi thoracique postérieure, et son sommet pointant vers la paroi thoracique antérieure.
+            </p>
+            <p id="p-2" data-content="p-2">
+                Les grands vaisseaux provenant du cœur envoient des branches vers la tête et le cou, le thorax et l’abdomen, ainsi que les membres supérieurs et inférieurs. 
+            </p>
+            <p id="p-3" data-content="p-3">
+                Le cœur occupe une place assez spéciale dans les sciences anatomiques. Et pour cause, on peut vivre sans rate ou avec un seul rein, on peut même régénérer son foie - mais on ne peut pas vivre sans cœur.
+            </p>
+            
+            <div class="image-wrapper">
+                <img src="Heart_Thumbnail.webp" alt="Anatomy of the heart">
+            </div>
+        </section>
+
+        <!-- Key Information Table Section -->
+        <section class="section-card">
+            <h2 id="h2-2" data-content="h2-2">Informations clés sur le cœur</h2>
+            <div class="table-container">
+                <table id="infoTable">
+                    <thead>
+                        <tr>
+                            <th id="th-1" data-content="th-1">Informations</th>
+                            <th id="th-2" data-content="th-2">Détails</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td id="td-l-1" data-content="td-l-1"><strong>Limites</strong></td>
+                            <td id="td-r-1" data-content="td-r-1">
+                                Limites supérieure (atriums, auricules),<br>
+                                inférieure (ventricules droit et gauche),<br>
+                                gauche (auricule gauche, ventricule gauche),<br>
+                                droite (atrium droit)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td id="td-l-2" data-content="td-l-2"><strong>Faces</strong></td>
+                            <td id="td-r-2" data-content="td-r-2">
+                                Faces sternocostale (ventricule droit),<br>
+                                diaphragmatique (surtout le ventricule droit, portion du ventricule gauche),<br>
+                                pulmonaire (empreinte cardiaque du poumon)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td id="td-l-3" data-content="td-l-3"><strong>Cavités</strong></td>
+                            <td id="td-r-3" data-content="td-r-3">
+                                Atriums/Oreillettes (gauche et droit),<br>
+                                ventricules (gauche et droit)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td id="td-l-4" data-content="td-l-4"><strong>Vaisseaux sortants / entrants</strong></td>
+                            <td id="td-r-4" data-content="td-r-4">
+                                Veines pulmonaires (→ atrium gauche),<br>
+                                veines caves supérieure et inférieure (→ atrium droit),<br>
+                                aorte (ventricule gauche →),<br>
+                                artère pulmonaire (ventricule droit →)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td id="td-l-5" data-content="td-l-5"><strong>Valves</strong></td>
+                            <td id="td-r-5" data-content="td-r-5">
+                                Valves tricuspide, pulmonaire, mitrale, aortique
+                                <br><br>
+                                <span style="color: var(--primary-red); font-weight: 600;">Moyen mnémotechnique : Tu Peux M’Ausculter</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td id="td-l-6" data-content="td-l-6"><strong>Circulation du sang dans le cœur</strong></td>
+                            <td id="td-r-6" data-content="td-r-6">
+                                <strong>Artère coronaire droite :</strong> rameau du nœud sinoatrial, rameau marginal droit, rameau du nœud atrioventriculaire, rameau interventriculaire postérieur.
+                                <br><br>
+                                <strong>Artère coronaire gauche :</strong> artère circonflexe, artère interventriculaire antérieure.
+                                <br><br>
+                                <strong>Sinus coronaire :</strong> grande veine cardiaque, veine cardiaque moyenne et petite veine cardiaque, veine marginale gauche, veines ventriculaires postérieures gauches.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p id="p-4" data-content="p-4" style="font-style: italic; color: var(--text-muted);">
+                Cet article vous présentera l’anatomie du cœur.
+            </p>
+        </section>
+
+        <!-- Faces Section -->
+        <section class="section-card">
+            <h2 id="h2-3" data-content="h2-3">Faces du cœur</h2>
+            <p id="p-5" data-content="p-5">
+                Le cœur possède cinq faces : la face basale (ou postérieure), la face diaphragmatique (ou inférieure), la face sternocostale (ou antérieure) et les surfaces pulmonaires gauche et droite. Il a également plusieurs bords: droit, gauche, supérieur et inférieur:
+            </p>
+            <ul style="padding: 0 1.5rem; margin-bottom: 1.5rem;" id="list-1">
+                <li data-content="li-1">Le bord droit est une petite zone de l’oreillette droite qui s’étend de la veine cave supérieure à la veine cave inférieure.</li>
+                <li data-content="li-2">Le bord gauche est formé par le ventricule gauche et l’oreillette gauche.</li>
+                <li data-content="li-3">Le bord supérieur, sur le côté antérieur, est constitué des deux oreillettes et de leur auricule.</li>
+                <li data-content="li-4">Le bord inférieur est marqué par le ventricule droit.</li>
+            </ul>
+            <p id="p-6" data-content="p-6">
+                À l'intérieur, le cœur est divisé en quatre chambres: deux oreillettes (droite et gauche) et deux ventricules (droit et gauche).
+            </p>
+            <div class="image-wrapper">
+                <img src="cWled2OsduUf2qH2JIz3w_heart-right-atrium_fr.webp" alt="Right Atrium View">
+            </div>
+            <p id="p-7" data-content="p-7">
+                L’oreillette et le ventricule droits reçoivent le sang désoxygéné en provenance des veines systémiques et le pompent vers les poumons. De l’autre côté, l’oreillette et ventricule gauches reçoivent le sang oxygéné venant des poumons et le pompent à travers les vaisseaux systémiques, qui le distribuent à travers le corps
+            </p>
+            <div class="image-wrapper">
+                <img src="VgFxbVdmQMzb4Rkyk00KfQ_heart-left-ventricle_fr-1.webp" alt="Left Ventricle View">
+            </div>
+            <p id="p-8" data-content="p-8">
+                Les côtés gauche et droit du cœur sont séparés par les septums interauriculaire et interventriculaire qui existent en continuité l’un avec l’autre. De plus, les oreillettes sont séparées des ventricules par un septum atrioventriculaire. Le sang circule des oreillettes aux ventricules à travers les orifices atrioventriculaires (droit et gauche) -des ouvertures dans le septum atrioventriculaire. Ces ouvertures sont fermées et ouvertes périodiquement par les valves du cœur selon la phase du cycle cardiaque.
+            </p>
+            <p id="p-9" data-content="p-9">
+                Bien qu’il existe beaucoup de structures sur le diagramme du cœur, ne vous inquiétez pas: nous les aborderons toutes dans ces articles et tutoriels vidéo. N’oubliez pas de jeter un coup d'œil à notre quiz sur l’anatomie du cœur, spécialement conçu pour vous aider à maîtriser l’anatomie cardiaque
+            </p>
+        </section>
+
+        <!-- Valves Section -->
+        <section class="section-card">
+            <h2 id="h2-4" data-content="h2-4">Valves cardiaques</h2>
+            <p id="p-10" data-content="p-10">
+                Les valves cardiaques séparent les oreillettes des ventricules, et les ventricules des gros vaisseaux. Ces valves comprennentdeux ou trois feuillets (ou “cuspides”) autour des orifices atrioventriculaires et racines des gros vaisseaux.
+            </p>
+            <div class="image-wrapper">
+                <img src="mOjX43SjdaV64xZJwqJSQ_heart-valves_fr.webp" alt="Heart Valves Overview">
+            </div>
+            <p id="p-11" data-content="p-11">
+                Les valves sont poussées ouvertes pour permettre la circulation du sang dans une direction, puis refermées pour sceller les orifices et empêcher le reflux sanguin. Le prolapsus des valves vers l’arrière est bloqué par les cordages tendineux -ou cordages du cœur- des cordes fibreuses qui connectent les muscles papillaires de la paroi du ventricule aux valves atrioventriculaires.
+            </p>
+            <p id="p-12" data-content="p-12">
+                Il existe deux groupes de valves: atrioventriculaire et semilunaire. Les valves atrioventriculaires empêchent le reflux sanguin des ventricules aux oreillettes:
+            </p>
+            <div style="background: rgba(69, 123, 157, 0.05); padding: 1.5rem; border-radius: 12px; border-left: 4px solid var(--accent-teal); margin-bottom: 2rem;">
+                <p id="p-13" data-content="p-13" style="margin-bottom: 0;">
+                    La valve atrioventriculaire droite/valve tricuspide se trouve entre l’oreillette droite et le ventricule droit. Elle est composée de trois feuillets/cuspides: antérieur/antérosupérieur, septal et postérieur/inférieur.
+                    La valve atrioventriculaire gauche/valve bicuspide est aussi appelée la valve mitrale, puisqu’elle ne possède que deux cuspides et ressemble ainsi à une mitre. Elle est située entre l’oreillette gauche et le ventricule gauche et est formée de deux feuillets/cuspides: antérieur/aortique et postérieur/murale
+                </p>
+            </div>
+            <div class="image-wrapper">
+                <img src="ttWuS2lI2qjWdP4S73g_valva-atrioventricularis-sinistra-valva-mitralis.webp" alt="Mitral Valve">
+            </div>
+            <p id="p-14" data-content="p-14">
+                La valve semilunaire pulmonaire se trouve entre le ventricule droit et l’orifice du tronc pulmonaire. Elle possède trois feuillets/cuspides: antérieur/non-adjacent, gauche/gauche adjacent, et droit/droit adjacent.
+                La valve semiluniare aortique se situe entre le ventricule gauche et l’orifice de l’aorte. Elle est composée de trois feuillets/cuspides semilunaires: gauche/gauche coronaire, droit/droit coronaire, et postérieur/non coronaire.
+            </p>
+            <p id="p-15" data-content="p-15">
+                En pratique clinique, les valves du cœur peuvent être auscultées, d’habitude en utilisant un stéthoscope. Pour ce faire, il faut bien maîtriser l’anatomie des surfaces de projection des bruits du cœur
+            </p>
+            <div class="image-wrapper">
+                <img src="6wd7maS3MjxRfKRrYrEESg_aortic-valve-2.webp" alt="Auscultation projection">
+            </div>
+        </section>
+
+    </main>
+
+    <a href="#" class="floating-top" id="scrollTop">
+        <i class="fa-solid fa-chevron-up"></i>
+    </a>
+
+    <script>
+        // --- CONTENT REPOSITORY ---
+        // Exactly preserved from source text
+        const translations = {
+            fr: {
+                "h1-1": "🫀 Anatomy du Cœur",
+                "sub": "Exploration approfondie de l'organe central de la vie.",
+                "badge-1": "Généralités",
+                "h2-1": "Cœur",
+                "p-1": "Le cœur est un organe musculaire qui pompe le sang à travers le corps en le faisant circuler à travers le système circulatoire/vasculaire. Il se trouve au milieu du médiastin, enveloppé d’un sac séreux constitué de deux couches, appelé le péricarde. Le cœur est en forme de pyramide à base carrée orientée comme si elle était tombée sur l’une de ses faces, sa base faisant ainsi face à la paroi thoracique postérieure, et son sommet pointant vers la paroi thoracique antérieure.",
+                "p-2": "Les grands vaisseaux provenant du cœur envoient des branches vers la tête et le cou, le thorax et l’abdomen, ainsi que les membres supérieurs et inférieurs. ",
+                "p-3": "Le cœur occupe une place assez spéciale dans les sciences anatomiques. Et pour cause, on peut vivre sans rate ou avec un seul rein, on peut même régénérer son foie - mais on ne peut pas vivre sans cœur.",
+                "h2-2": "Informations clés sur le cœur",
+                "th-1": "Informations",
+                "th-2": "Détails",
+                "td-l-1": "Limites",
+                "td-r-1": "Limites supérieure (atriums, auricules), inférieure (ventricules droit et gauche), gauche (auricule gauche, ventricule gauche), droite (atrium droit)",
+                "td-l-2": "Faces",
+                "td-r-2": "Faces sternocostale (ventricule droit), diaphragmatique (surtout le ventricule droit, portion du ventricule gauche), pulmonaire (empreinte cardiaque du poumon)",
+                "td-l-3": "Cavités",
+                "td-r-3": "Atriums/Oreillettes (gauche et droit), ventricules (gauche et droit)",
+                "td-l-4": "Vaisseaux sortants / entrants",
+                "td-r-4": "Veines pulmonaires (→ atrium gauche), veines caves supérieure et inférieure (→ atrium droit), aorte (ventricule gauche →), artère pulmonaire (ventricule droit →)",
+                "td-l-5": "Valves",
+                "td-r-5": "Valves tricuspide, pulmonaire, mitrale, aortique. Moyen mnémotechnique : Tu Peux M’Ausculter",
+                "td-l-6": "Circulation",
+                "td-r-6": "Droit: rameau du nœud sinoatrial, marginal droit, etc. Gauche: circonflexe, interventriculaire antérieure. Sinus: grande veine, moyenne et petite veine.",
+                "p-4": "Cet article vous présentera l’anatomie du cœur.",
+                "h2-3": "Faces du cœur",
+                "p-5": "Le cœur possède cinq faces : la face basale (ou postérieure), la face diaphragmatique (ou inférieure), la face sternocostale (ou antérieure) et les surfaces pulmonaires gauche et droite. Il a également plusieurs bords: droit, gauche, supérieur et inférieur:",
+                "li-1": "Le bord droit est une petite zone de l’oreillette droite...",
+                "li-2": "Le bord gauche est formé par le ventricule gauche...",
+                "li-3": "Le bord supérieur est constitué des deux oreillettes...",
+                "li-4": "Le bord inférieur est marqué par le ventricule droit.",
+                "p-6": "À l'intérieur, le cœur est divisé en quatre chambres...",
+                "p-7": "L’oreillette et le ventricule droits reçoivent le sang désoxygéné...",
+                "p-8": "Les côtés gauche et droit du cœur sont séparés par les septums...",
+                "p-9": "N’oubliez pas de jeter un coup d'œil à notre quiz...",
+                "h2-4": "Valves cardiaques",
+                "p-10": "Les valves cardiaques séparent les oreillettes des ventricules...",
+                "p-11": "Les valves sont poussées ouvertes pour permettre la circulation...",
+                "p-12": "Il existe deux groupes de valves: atrioventriculaire et semilunaire...",
+                "p-13": "La valve tricuspide... La valve mitrale...",
+                "p-14": "La valve semilunaire pulmonaire... La valve semiluniare aortique...",
+                "p-15": "En pratique clinique, les valves du cœur peuvent être auscultées..."
+            },
+            en: {
+                "h1-1": "🫀 Anatomy of the Heart",
+                "sub": "In-depth exploration of life's central organ.",
+                "badge-1": "General Information",
+                "h2-1": "The Heart",
+                "p-1": "The heart is a muscular organ that pumps blood throughout the body by circulating it through the circulatory/vascular system. It is located in the middle of the mediastinum, encased in a two-layered serous sac called the pericardium. The heart is shaped like a square-based pyramid oriented as if it had fallen on one of its faces, with its base facing the posterior thoracic wall and its apex pointing towards the anterior thoracic wall.",
+                "p-2": "The large vessels originating from the heart send branches to the head and neck, thorax and abdomen, as well as the upper and lower limbs.",
+                "p-3": "The heart occupies a very special place in anatomical sciences. For good reason, one can live without a spleen or with a single kidney, one can even regenerate their liver - but one cannot live without a heart.",
+                "h2-2": "Key Facts about the Heart",
+                "th-1": "Information",
+                "th-2": "Details",
+                "td-l-1": "Boundaries",
+                "td-r-1": "Superior (atria, auricles), inferior (right and left ventricles), left (left auricle, left ventricle), right (right atrium)",
+                "td-l-2": "Faces",
+                "td-r-2": "Sternocostal (right ventricle), diaphragmatic (mainly right ventricle, portion of left ventricle), pulmonary (cardiac impression of the lung)",
+                "td-l-3": "Cavities",
+                "td-r-3": "Atria/Auricles (left and right), ventricles (left and right)",
+                "td-l-4": "Outgoing / Incoming Vessels",
+                "td-r-4": "Pulmonary veins (→ left atrium), superior and inferior vena cava (→ right atrium), aorta (left ventricle →), pulmonary artery (right ventricle →)",
+                "td-l-5": "Valves",
+                "td-r-5": "Tricuspid, pulmonary, mitral, aortic valves. Mnemonic: You Can Auscultate Me (Tu Peux M’Ausculter)",
+                "td-l-6": "Blood Circulation",
+                "td-r-6": "Right artery: sinoatrial node branch, right marginal, etc. Left artery: circumflex, anterior interventricular. Sinus: great, middle, and small cardiac veins.",
+                "p-4": "This article will introduce you to the anatomy of the heart.",
+                "h2-3": "Faces of the Heart",
+                "p-5": "The heart has five faces: the basal (or posterior) face, the diaphragmatic (or inferior) face, the sternocostal (or anterior) face, and the left and right pulmonary surfaces. It also has several borders: right, left, superior, and inferior.",
+                "li-1": "The right border is a small area of the right atrium...",
+                "li-2": "The left border is formed by the left ventricle...",
+                "li-3": "The superior border is made up of the two atria...",
+                "li-4": "The inferior border is marked by the right ventricle.",
+                "p-6": "Inside, the heart is divided into four chambers...",
+                "p-7": "The right atrium and ventricle receive deoxygenated blood...",
+                "p-8": "The left and right sides of the heart are separated by septa...",
+                "p-9": "Don't forget to take a look at our heart anatomy quiz...",
+                "h2-4": "Heart Valves",
+                "p-10": "Heart valves separate the atria from the ventricles...",
+                "p-11": "The valves are pushed open to allow blood circulation...",
+                "p-12": "There are two groups of valves: atrioventricular and semilunar...",
+                "p-13": "The tricuspid valve... The mitral valve...",
+                "p-14": "The pulmonary semilunar valve... The aortic semilunar valve...",
+                "p-15": "In clinical practice, heart valves can be auscultated..."
+            },
+            ar: {
+                "h1-1": "🫀 تشريح القلب",
+                "sub": "استكشاف متعمق للعضو المركزي في الحياة.",
+                "badge-1": "معلومات عامة",
+                "h2-1": "القلب",
+                "p-1": "القلب هو عضو عضلي يضخ الدم عبر الجسم عن طريق تدويره عبر الجهاز الدوري/الوعائي. يقع في منتصف المنصف، محاطاً بكيس مصلي يتكون من طبقتين يسمى التأمور. القلب على شكل هرم ذو قاعدة مربعة موجه كما لو كان قد سقط على أحد أوجهه، بحيث تواجه قاعدته الجدار الصدري الخلفي، وتشير قمته نحو الجدار الصدري الأمامي.",
+                "p-2": "ترسل الأوعية الكبيرة القادمة من القلب فروعاً إلى الرأس والرقبة، والصدرو البطن، وكذلك الأطراف العلوية والسفلية.",
+                "p-3": "يحتل القلب مكانة خاصة جداً في العلوم التشريحية. ولسبب وجيه، يمكن للمرء أن يعيش بدون طحال أو بكلية واحدة، بل ويمكنه تجديد كبده - لكن لا يمكنه العيش بدون قلب.",
+                "h2-2": "معلومات أساسية عن القلب",
+                "th-1": "معلومات",
+                "th-2": "تفاصيل",
+                "td-l-1": "الحدود",
+                "td-r-1": "العلوية (الأذينات)، السفلية (البطين الأيمن والأيسر)، اليسرى (الأذينة اليسرى، البطين الأيسر)، اليمنى (الأذين الأيمن)",
+                "td-l-2": "الوجوه",
+                "td-r-2": "الوجه القصي الضلعي (البطين الأيمن)، الحجابي (البطين الأيمن وجزء من الأيسر)، الرئوي",
+                "td-l-3": "التجاويف",
+                "td-r-3": "الأذينات (اليسرى واليمنى)، البطينات (اليسرى واليمنى)",
+                "td-l-4": "الأوعية الصادرة / الواردة",
+                "td-r-4": "الأوردة الرئوية، الأوردة الجوفاء، الأبهر، الشريان الرئوي",
+                "td-l-5": "الصمامات",
+                "td-r-5": "الصمام ثلاثي الشرف، الرئوي، المترالي، الأبهري. وسيلة مساعدة للذاكرة: يمكنك فحصي",
+                "td-l-6": "دورة الدم",
+                "td-r-6": "الشريان التاجي الأيمن والأيسر، الجيب التاجي والأوردة القلبية المختلفة.",
+                "p-4": "هذا المقال سيعرفك على تشريح القلب.",
+                "h2-3": "وجوه القلب",
+                "p-5": "للقلب خمسة وجوه: الوجه القاعدي (أو الخلفي)، الوجه الحجابي (أو السفلي)، الوجه القصي الضلعي (أو الأمامي) والأسطح الرئوية اليسرى واليمنى.",
+                "li-1": "الحافة اليمنى هي منطقة صغيرة من الأذين الأيمن...",
+                "li-2": "الحافة اليسرى تتكون من البطين الأيسر...",
+                "li-3": "الحافة العلوية تتكون من الأذينين...",
+                "li-4": "الحافة السفلية يحددها البطين الأيمن.",
+                "p-6": "في الداخل، ينقسم القلب إلى أربع حجرات...",
+                "p-7": "يستقبل الأذين والبطين الأيمن الدم غير المؤكسج...",
+                "p-8": "يفصل بين الجانبين الأيسر والأيمن للقلب حواجز...",
+                "p-9": "لا تنس إلقاء نظرة على اختبار تشريح القلب...",
+                "h2-4": "صمامات القلب",
+                "p-10": "تفصل صمامات القلب الأذينات عن البطينات...",
+                "p-11": "يتم دفع الصمامات لتفتح لتسمح بمرور الدم...",
+                "p-12": "توجد مجموعتان من الصمامات: الأذينية البطينية والهلالية...",
+                "p-13": "الصمام ثلاثي الشرف... الصمام المترالي...",
+                "p-14": "الصمام الرئوي... الصمام الأبهري...",
+                "p-15": "في الممارسة السريرية، يمكن تسمع صمامات القلب..."
+            }
+        };
+
+        // --- THEME TOGGLE ---
+        function toggleTheme() {
+            const body = document.body;
+            const icon = document.getElementById('themeIcon');
+            if (body.getAttribute('data-theme') === 'dark') {
+                body.setAttribute('data-theme', 'light');
+                icon.classList.replace('fa-moon', 'fa-sun');
+            } else {
+                body.setAttribute('data-theme', 'dark');
+                icon.classList.replace('fa-sun', 'fa-moon');
+            }
+        }
+
+        // --- LANGUAGE SWITCHER ---
+        function changeLanguage() {
+            const lang = document.getElementById('langSelect').value;
+            const elements = document.querySelectorAll('[data-content]');
+            
+            // Set direction
+            document.documentElement.dir = (lang === 'ar') ? 'rtl' : 'ltr';
+            document.documentElement.lang = lang;
+
+            elements.forEach(el => {
+                const key = el.getAttribute('data-content');
+                if (translations[lang][key]) {
+                    el.innerHTML = translations[lang][key];
+                }
+            });
+        }
+
+        // --- SCROLL EFFECTS ---
+        window.addEventListener('scroll', () => {
+            // Reading Progress
+            const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = (winScroll / height) * 100;
+            document.getElementById("reading-progress").style.width = scrolled + "%";
+
+            // Scroll Top Button
+            const btn = document.getElementById('scrollTop');
+            if (winScroll > 300) btn.classList.add('visible');
+            else btn.classList.remove('visible');
+
+            // Reveal Animation
+            const cards = document.querySelectorAll('.section-card');
+            cards.forEach(card => {
+                const cardTop = card.getBoundingClientRect().top;
+                if (cardTop < window.innerHeight - 100) {
+                    card.classList.add('reveal');
+                }
+            });
+        });
+
+        // Initialize reveal on load
+        window.dispatchEvent(new Event('scroll'));
+    </script>
+</body>
+</html>

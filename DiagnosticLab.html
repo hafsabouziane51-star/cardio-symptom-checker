@@ -1,0 +1,362 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intelligence Hub | Cinematic Nexus</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-deep: #020308;
+            --neon-red: #ff2d2d;
+            --neon-cyan: #00f2ff;
+            --glass: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 255, 255, 0.1);
+            --transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            background-color: var(--bg-deep);
+            color: #fff;
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* --- SPATIAL LIGHTING ENVIRONMENT --- */
+        .ambient-environment {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            pointer-events: none;
+            background: 
+                radial-gradient(circle at var(--x, 50%) var(--y, 50%), rgba(0, 242, 255, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 10% 10%, rgba(255, 45, 45, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 90% 90%, rgba(0, 242, 255, 0.05) 0%, transparent 50%);
+            filter: blur(40px);
+        }
+
+        .spatial-grid {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: 
+                linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: 50px 50px;
+            transform: perspective(500px) rotateX(60deg) translateY(-100px);
+            z-index: -1;
+            opacity: 0.3;
+        }
+
+        /* --- HEADER AREA --- */
+        header {
+            padding: 5rem 2rem 4rem 2rem;
+            text-align: center;
+            max-width: 900px;
+        }
+
+        .sys-badge {
+            display: inline-block;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem;
+            letter-spacing: 5px;
+            color: var(--neon-cyan);
+            text-transform: uppercase;
+            margin-bottom: 1.5rem;
+            text-shadow: 0 0 10px var(--neon-cyan);
+            opacity: 0.8;
+        }
+
+
+.dynamic-title {
+    font-size: clamp(2.5rem, 10vw, 4.5rem);
+    font-weight: 800;
+    letter-spacing: -2.5px;
+    margin-bottom: 1rem;
+
+    background: linear-gradient(
+        90deg, 
+        #ffffff 0%, 
+        #ffffff 35%, 
+        #ff3333 50%, 
+        #ffffff 65%, 
+        #ffffff 100%
+    );
+
+    background-size: 200% auto;
+
+    -webkit-background-clip: text;
+    background-clip: text;
+
+    color: #fff; /* 🔥 fallback مهم */
+
+    animation: title-flow 5s linear infinite;
+
+    filter: drop-shadow(0 0 15px rgba(255, 51, 51, 0.2));
+}
+    
+
+        /* --- NEXUS MODULE GRID --- */
+        .nexus-grid {
+            width: 100%;
+            max-width: 1200px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            padding: 0 2rem 10rem 2rem;
+        }
+
+        .module-node {
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 3rem 2rem;
+            position: relative;
+            cursor: pointer;
+            transition: var(--transition);
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        /* The Luminous Layer */
+        .module-node::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at center, var(--accent-color, var(--neon-cyan)), transparent 70%);
+            opacity: 0;
+            transition: var(--transition);
+            z-index: -1;
+        }
+
+        .module-node:hover {
+            border-color: var(--accent-color, var(--neon-cyan));
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 20px var(--glow-color, rgba(0, 242, 255, 0.2));
+        }
+
+        .module-node:hover::after {
+            opacity: 0.1;
+        }
+
+        .node-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.6rem;
+            letter-spacing: 2px;
+            color: var(--text-color, var(--neon-cyan));
+            margin-bottom: 1rem;
+            opacity: 0.7;
+        }
+
+        .node-name {
+            font-size: 1.6rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            color: #fff;
+        }
+
+        .node-footer {
+            margin-top: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: 'JetBrains Mono';
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            opacity: 0.4;
+        }
+
+        /* --- CLINICAL ENERGY FOOTER --- */
+        .energy-footer {
+            position: fixed;
+            bottom: 0; left: 0; width: 100%; height: 100px;
+            pointer-events: none;
+            z-index: 100;
+            background: linear-gradient(to top, var(--bg-deep) 40%, transparent);
+        }
+
+        .ecg-line {
+            fill: none;
+            stroke: var(--neon-red);
+            stroke-width: 2.5;
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            animation: ecg-pulse 8s linear infinite;
+            filter: drop-shadow(0 0 15px var(--neon-red));
+        }
+
+        @keyframes ecg-pulse { to { stroke-dashoffset: 0; } }
+
+        /* --- RESPONSIVE DESIGN --- */
+        @media (max-width: 768px) {
+            header { padding: 3rem 1.5rem 2rem 1.5rem; }
+            .nexus-grid { grid-template-columns: 1fr; padding: 0 1.5rem 8rem 1.5rem; }
+            .module-node { padding: 2rem; }
+        }
+/* Ensure the node can contain absolute elements */
+.module-node {
+    position: relative;
+}
+
+/* New Lock Indicator Styling */
+.node-lock {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    font-size: 0.75rem;
+    color: var(--accent-color);
+    opacity: 0.4; /* Subtle and non-intrusive */
+    pointer-events: none; /* Icons won't interfere with clicks */
+    z-index: 10;
+}
+
+/* Optional: Slight glow to match the futuristic UI */
+.node-lock {
+    text-shadow: 0 0 5px var(--glow-color);
+}
+
+
+
+    </style>
+</head>
+<body>
+
+    <div class="ambient-environment" id="ambient"></div>
+    <div class="spatial-grid"></div>
+
+    <header>
+        <div class="sys-badge">NEURAL LINK ACTIVE // v2.0.4</div>
+        <h1 class="dynamic-title"> diagnostic lab </h1>
+    </header>
+
+    <div class="nexus-grid">
+        
+      <a href="anatomy.html" style="text-decoration:none; color:inherit;">
+    <div class="module-node" style="--accent-color: var(--neon-cyan); --glow-color: rgba(0, 242, 255, 0.3); --text-color: var(--neon-cyan);">
+        <div class="node-tag">UNIT_01 // CORE_SYSTEM</div>
+        <div class="node-name">Foundational Anatomy</div>
+        <div class="node-footer">
+            <span>Access Ready</span>
+            <span>ID: BASE-01</span>
+        </div>
+    </div>
+</a>
+
+     <!-- Module 2 -->
+<a href="onde.html" style="text-decoration:none; color:inherit; display:block;">
+
+    <div class="module-node" style="--accent-color: var(--neon-cyan); --glow-color: rgba(0, 242, 255, 0.3); --text-color: var(--neon-cyan);">
+        <div class="node-tag">UNIT_02 // WAVE_DATA</div>
+        <div class="node-name">ECG Parameters</div>
+        <div class="node-footer">
+            <span>Access Ready</span>
+            <span>ID: PARM-02</span>
+        </div>
+    </div>
+
+</a>
+<!-- Module 3 -->
+        <div class="module-node" style="--accent-color: var(--neon-cyan); --glow-color: rgba(0, 242, 255, 0.3); --text-color: var(--neon-cyan);">
+            <i class="fas fa-lock node-lock"></i>
+            <div class="node-tag">UNIT_03 // BASE_LINE</div>
+            <div class="node-name">Normal Reading</div>
+            <div class="node-footer">
+                <span>Access Ready</span>
+                <span>ID: NORM-03</span>
+            </div>
+        </div>
+
+        <!-- Module 4 -->
+        <div class="module-node" style="--accent-color: var(--neon-red); --glow-color: rgba(255, 45, 45, 0.3); --text-color: var(--neon-red);">
+            <i class="fas fa-lock node-lock"></i>
+            <div class="node-tag">UNIT_04 // ANOMALY_CORE</div>
+            <div class="node-name">Rhythm Disorders</div>
+            <div class="node-footer">
+                <span>High Priority</span>
+                <span>ID: RYTH-04</span>
+            </div>
+        </div>
+
+        <!-- Module 5 -->
+        <div class="module-node" style="--accent-color: var(--neon-red); --glow-color: rgba(255, 45, 45, 0.3); --text-color: var(--neon-red);">
+            <i class="fas fa-lock node-lock"></i>
+            <div class="node-tag">UNIT_05 // PATHWAY_FLOW</div>
+            <div class="node-name">Conduction Blocks</div>
+            <div class="node-footer">
+                <span>Critical Path</span>
+                <span>ID: COND-05</span>
+            </div>
+        </div>
+
+        <!-- Module 6 -->
+        <div class="module-node" style="--accent-color: var(--neon-red); --glow-color: rgba(255, 45, 45, 0.3); --text-color: var(--neon-red);">
+            <i class="fas fa-lock node-lock"></i>
+            <div class="node-tag">UNIT_06 // ACUTE_RESPONSE</div>
+            <div class="node-name">Emergency Ischemia</div>
+            <div class="node-footer">
+                <span>Urgent Access</span>
+                <span>ID: EMER-06</span>
+            </div>
+        </div>
+
+        <!-- Module 7 -->
+        <div class="module-node" style="--accent-color: var(--neon-cyan); --glow-color: rgba(0, 242, 255, 0.3); --text-color: var(--neon-cyan);">
+            <i class="fas fa-lock node-lock"></i>
+            <div class="node-tag">UNIT_07 // STRUCTURE_ID</div>
+            <div class="node-name">Cardiac Hypertrophy</div>
+            <div class="node-footer">
+                <span>Access Ready</span>
+                <span>ID: STRU-07</span>
+            </div>
+        </div>
+
+        <!-- Module 8 -->
+        <div class="module-node" style="--accent-color: #fff; --glow-color: rgba(255, 255, 255, 0.2); --text-color: #fff;">
+            <i class="fas fa-lock node-lock"></i>
+            <div class="node-tag">UNIT_08 // MASTER_SYNTHESIS</div>
+            <div class="node-name">Full Interpretation</div>
+            <div class="node-footer">
+                <span>Final Clearance</span>
+                <span>ID: MAST-08</span>
+            </div>
+        </div>
+
+    <!-- Persistent Energy Waveform -->
+    <div class="energy-footer">
+        <svg style="width:100%; height:100%" viewBox="0 0 1000 100" preserveAspectRatio="none">
+            <path class="ecg-line" d="M0,50 L80,50 L85,40 L95,60 L100,50 L150,50 L160,10 L175,90 L190,50 L240,50 L250,45 L270,45 L280,50 L360,50 L365,40 L375,60 L380,50 L430,50 L440,10 L455,90 L470,50 L520,50 L530,45 L550,45 L560,50 L640,50 L645,40 L655,60 L660,50 L710,50 L720,10 L735,90 L750,50 L800,50 L810,45 L830,45 L840,50 L1000,50" />
+        </svg>
+    </div>
+
+    <script>
+        // Immersive Spatial Light Tracking
+        document.addEventListener('mousemove', (e) => {
+            const x = (e.clientX / window.innerWidth) * 100;
+            const y = (e.clientY / window.innerHeight) * 100;
+            document.documentElement.style.setProperty('--x', `${x}%`);
+            document.documentElement.style.setProperty('--y', `${y}%`);
+        });
+
+        // Subtle Interaction Logic
+        document.querySelectorAll('.module-node').forEach(node => {
+            node.addEventListener('click', () => {
+                node.style.transform = 'scale(0.95) translateY(0px)';
+                setTimeout(() => {
+                    node.style.transform = '';
+                }, 200);
+            });
+        });
+    </script>
+</body>
+</html>

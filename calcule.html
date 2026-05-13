@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ECG Masterclass | Apprentissage de la Cardiologie</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Medical Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- AOS for scroll animations -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #1d3557;      /* Dark Blue */
+            --secondary: #457b9d;    /* Cyan/Steel Blue */
+            --accent: #e63946;       /* Heart Red */
+            --bg: #f8f9fa;           /* Soft Gray */
+            --white: #ffffff;
+            --text: #2b2d42;
+            --formula-bg: #e1eaf2;
+            --shadow: 0 10px 30px rgba(0,0,0,0.08);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            scroll-behavior: smooth;
+        }
+
+        /* --- Navigation --- */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(29, 53, 87, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .logo {
+            color: var(--white);
+            font-weight: 700;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo i {
+            color: var(--accent);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-links a {
+            color: var(--white);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: var(--transition);
+            opacity: 0.8;
+        }
+
+        .nav-links a:hover {
+            opacity: 1;
+            color: var(--secondary);
+        }
+
+        /* --- Hero Section --- */
+        .hero {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: var(--white);
+            padding: 0 20px;
+            margin-top: 60px;
+        }
+
+        .hero h1 {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            margin-bottom: 1rem;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        /* --- Layout --- */
+        .container {
+            max-width: 1200px;
+            margin: -100px auto 50px;
+            padding: 0 20px;
+        }
+
+        section {
+            padding-top: 100px;
+            margin-bottom: 50px;
+        }
+
+        .card {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+            border-bottom: 4px solid var(--secondary);
+        }
+
+        h2 {
+            color: var(--primary);
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border-left: 5px solid var(--accent);
+            padding-left: 15px;
+        }
+
+        h3 {
+            color: var(--secondary);
+            font-size: 1.4rem;
+            margin: 1.5rem 0 1rem;
+        }
+
+        /* --- Styled Elements --- */
+        .formula-box {
+            background: var(--formula-bg);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 15px 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            color: var(--primary);
+            border-left: 4px solid var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .example-box {
+            background: #fff5f5;
+            border: 1px dashed var(--accent);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        .example-title {
+            color: var(--accent);
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        hr {
+            margin: 2rem 0;
+            border: 0;
+            border-top: 1px solid #eee;
+        }
+
+        ul {
+            list-style: none;
+            margin-bottom: 1rem;
+        }
+
+        ul li {
+            margin-bottom: 10px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        ul li::before {
+            content: "\f00c";
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            color: var(--secondary);
+            margin-top: 4px;
+        }
+
+        /* --- Tables --- */
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            margin: 2rem 0;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--white);
+            min-width: 600px;
+        }
+
+        th {
+            background: var(--primary);
+            color: var(--white);
+            text-align: left;
+            padding: 15px;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        tr:nth-child(even) {
+            background: #f9fbff;
+        }
+
+        /* --- Footer --- */
+        footer {
+            text-align: center;
+            padding: 40px;
+            background: var(--primary);
+            color: var(--white);
+            font-size: 0.9rem;
+        }
+
+        /* --- Responsive Design --- */
+        @media (max-width: 992px) {
+            .nav-links { display: none; }
+            .hero { height: 350px; }
+            .container { margin-top: -50px; }
+            .card { padding: 25px; }
+        }
+
+        @media (max-width: 600px) {
+            h2 { font-size: 1.5rem; }
+            h3 { font-size: 1.2rem; }
+            .hero h1 { font-size: 2.2rem; }
+        }
+
+        /* Animations */
+        [data-aos] {
+            pointer-events: none;
+        }
+        .aos-animate {
+            pointer-events: auto;
+        }
+/* ===================================== */
+/* Extra Responsive Design */
+/* ===================================== */
+
+@media (max-width: 768px) {
+
+    body {
+        overflow-x: hidden;
+    }
+
+    nav {
+        padding: 15px;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .nav-links {
+        display: flex !important;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .nav-links a {
+        font-size: 0.8rem;
+        padding: 8px 12px;
+        background: rgba(255,255,255,0.1);
+        border-radius: 8px;
+    }
+
+    .hero {
+        height: auto;
+        padding: 120px 20px 60px;
+    }
+
+    .hero h1 {
+        font-size: 2rem;
+        line-height: 1.2;
+    }
+
+    .hero p {
+        font-size: 1rem;
+    }
+
+    .container {
+        margin-top: -30px;
+        padding: 0 12px;
+    }
+
+    .card {
+        padding: 20px;
+        border-radius: 16px;
+    }
+
+    h2 {
+        font-size: 1.3rem;
+        flex-wrap: wrap;
+        line-height: 1.4;
+    }
+
+    h3 {
+        font-size: 1.1rem;
+    }
+
+    p,
+    li,
+    td,
+    th {
+        font-size: 0.95rem;
+    }
+
+    .formula-box {
+        font-size: 0.9rem;
+        padding: 15px;
+        overflow-x: auto;
+    }
+
+    .example-box {
+        padding: 15px;
+    }
+
+    table {
+        min-width: 500px;
+    }
+
+    .table-container {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    ul li {
+        align-items: flex-start;
+    }
+}
+
+/* ===================================== */
+/* Very Small Phones */
+/* ===================================== */
+
+@media (max-width: 480px) {
+
+    .hero h1 {
+        font-size: 1.6rem;
+    }
+
+    .hero p {
+        font-size: 0.9rem;
+    }
+
+    .card {
+        padding: 15px;
+    }
+
+    h2 {
+        font-size: 1.1rem;
+        padding-left: 10px;
+    }
+
+    h3 {
+        font-size: 1rem;
+    }
+
+    .formula-box {
+        font-size: 0.8rem;
+    }
+
+    .nav-links {
+        gap: 8px;
+    }
+
+    .nav-links a {
+        font-size: 0.7rem;
+        padding: 6px 10px;
+    }
+}
+
+    </style>
+</head>
+<body>
+
+    <nav>
+       
+        <div class="nav-links">
+            <a href="#fc-calcul">FC Calcul</a>
+            <a href="#fc-interp">FC Interprétation</a>
+            <a href="#intervals">Intervalles</a>
+            <a href="#ecg-interp">ECG Interprétation</a>
+        </div>
+    </nav>
+
+    <header class="hero">
+        <div data-aos="fade-up">
+            <h1>Analyse de l'Électrocardiogramme</h1>
+            <p>Guide complet pour le calcul et l'interprétation clinique</p>
+        </div>
+    </header>
+
+    <main class="container">
+
+        <!-- ========================= -->
+        <!-- Calcul de la FC -->
+        <!-- ========================= -->
+        <section id="fc-calcul">
+            <div class="card" data-aos="fade-up">
+                <h2><i class="fa-solid fa-calculator"></i> Calcul de la Fréquence Cardiaque (FC)</h2>
+                
+                <h3>1) R-R Régulier</h3>
+                
+                <p><strong>Méthode des grands carrés</strong></p>
+                <div class="formula-box">
+                    <i class="fa-solid fa-square-root-variable"></i>
+                    FC = 300 ÷ nombre de grands carrés entre R-R
+                </div>
+                <div class="example-box">
+                    <span class="example-title">Exemple :</span>
+                    300 ÷ 4 = 75 bpm
+                </div>
+
+                <hr>
+
+                <p><strong>Méthode des petits carrés</strong></p>
+                <div class="formula-box">
+                    <i class="fa-solid fa-square-root-variable"></i>
+                    FC = 1500 ÷ nombre de petits carrés entre R-R
+                </div>
+                <div class="example-box">
+                    <span class="example-title">Exemple :</span>
+                    1500 ÷ 20 = 75 bpm
+                </div>
+
+                <hr>
+
+                <p><strong>Méthode avec intervalle RR</strong></p>
+                <div class="formula-box">
+                    <i class="fa-solid fa-stopwatch"></i>
+                    FC = 60 ÷ RR (en secondes)
+                </div>
+                <div class="example-box">
+                    <span class="example-title">Exemple :</span>
+                    RR = 0.8 s <br>
+                    60 ÷ 0.8 = 75 bpm
+                </div>
+
+                <hr>
+
+                <h3>2) R-R Irrégulier</h3>
+
+                <p><strong>Méthode des 6 secondes</strong></p>
+                <ul>
+                    <li>Compter le nombre de QRS dans 30 grands carrés</li>
+                    <li>Puis multiplier par 10</li>
+                </ul>
+                <div class="formula-box">
+                    FC = Nombre de QRS × 10
+                </div>
+                <div class="example-box">
+                    <span class="example-title">Exemple :</span>
+                    8 QRS × 10 = 80 bpm
+                </div>
+
+                <hr>
+
+                <p><strong>Méthode des 10 grands carrés</strong></p>
+                <ul>
+                    <li>Compter le nombre de QRS dans 10 grands carrés</li>
+                    <li>Puis multiplier par 30</li>
+                </ul>
+                <div class="formula-box">
+                    FC = Nombre de QRS × 30
+                </div>
+                <div class="example-box">
+                    <span class="example-title">Exemple :</span>
+                    3 QRS × 30 = 90 bpm
+                </div>
+
+                <h3>Résumé</h3>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Type</th>
+                                <th>Méthode</th>
+                                <th>Formule</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Régulier</td><td>Grands carrés</td><td>300 ÷ grands carrés</td></tr>
+                            <tr><td>Régulier</td><td>Petits carrés</td><td>1500 ÷ petits carrés</td></tr>
+                            <tr><td>Régulier</td><td>Intervalle RR</td><td>60 ÷ RR</td></tr>
+                            <tr><td>Irrégulier</td><td>6 secondes</td><td>QRS × 10</td></tr>
+                            <tr><td>Irrégulier</td><td>10 grands carrés</td><td>QRS × 30</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================= -->
+        <!-- Interprétation de la FC -->
+        <!-- ========================= -->
+        <section id="fc-interp">
+            <div class="card" data-aos="fade-up">
+                <h2><i class="fa-solid fa-stethoscope"></i> Interprétation des Résultats de la FC</h2>
+                <p>Après le calcul de la fréquence cardiaque (FC), on interprète le résultat selon le nombre de bpm (battements par minute).</p>
+
+                <hr>
+
+                <h3>1) FC Normale</h3>
+                <div class="formula-box" style="background: #e8f5e9; border-left-color: #4caf50;">
+                    FC entre 60 et 100 bpm
+                </div>
+                <ul>
+                    <li>Rythme sinusal normal</li>
+                    <li>Fonctionnement cardiaque normal</li>
+                </ul>
+                <div class="example-box">
+                    <span class="example-title">Exemple :</span>
+                    FC = 75 bpm → Normal
+                </div>
+
+                <hr>
+
+                <h3>2) Bradycardie</h3>
+                <div class="formula-box" style="background: #fff3e0; border-left-color: #ff9800;">
+                    FC < 60 bpm
+                </div>
+                <ul>
+                    <li>Rythme cardiaque lent</li>
+                    <li>Peut être physiologique chez les sportifs</li>
+                    <li>Peut indiquer un trouble de conduction</li>
+                </ul>
+                <p><strong>Causes possibles :</strong></p>
+                <ul>
+                    <li>Bloc AV</li>
+                    <li>Médicaments</li>
+                    <li>Hypothyroïdie</li>
+                </ul>
+                <div class="example-box">
+                    <span class="example-title">Exemple :</span>
+                    FC = 45 bpm → Bradycardie
+                </div>
+
+                <hr>
+
+                <h3>3) Tachycardie</h3>
+                <div class="formula-box" style="background: #ffebee; border-left-color: var(--accent);">
+                    FC > 100 bpm
+                </div>
+                <ul>
+                    <li>Rythme cardiaque rapide</li>
+                    <li>Augmentation de l’activité cardiaque</li>
+                </ul>
+                <p><strong>Causes possibles :</strong></p>
+                <ul>
+                    <li>Stress</li>
+                    <li>Fièvre</li>
+                    <li>Anémie</li>
+                    <li>Arythmie</li>
+                </ul>
+                <div class="example-box">
+                    <span class="example-title">Exemple :</span>
+                    FC = 130 bpm → Tachycardie
+                </div>
+
+                <hr>
+
+                <h3>4) Rythme Régulier</h3>
+                <p>Les intervalles R-R sont égaux.</p>
+                <ul>
+                    <li>Le rythme cardiaque est stable</li>
+                    <li>Souvent rythme sinusal normal</li>
+                </ul>
+
+                <hr>
+
+                <h3>5) Rythme Irrégulier</h3>
+                <p>Les intervalles R-R sont différents.</p>
+                <ul>
+                    <li>Le rythme cardiaque est irrégulier</li>
+                    <li>Possible arythmie</li>
+                </ul>
+                <p><strong>Exemples :</strong></p>
+                <ul>
+                    <li>Fibrillation auriculaire</li>
+                    <li>Extrasystoles</li>
+                </ul>
+
+                <h3>Résumé</h3>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Résultat FC</th>
+                                <th>Interprétation</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>60 - 100 bpm</td><td>Normale</td></tr>
+                            <tr><td>&lt; 60 bpm</td><td>Bradycardie</td></tr>
+                            <tr><td>&gt; 100 bpm</td><td>Tachycardie</td></tr>
+                            <tr><td>R-R réguliers</td><td>Rythme régulier</td></tr>
+                            <tr><td>R-R irréguliers</td><td>Rythme irrégulier</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================= -->
+        <!-- Intervalles ECG -->
+        <!-- ========================= -->
+        <section id="intervals">
+            <div class="card" data-aos="fade-up">
+                <h2><i class="fa-solid fa-arrows-left-right"></i> ECG Intervals</h2>
+                
+                <h3>1) PR Interval</h3>
+                <p>Le PR Interval est la distance entre : <br><strong>Début de l’onde P → début du complexe QRS</strong></p>
+                <p>Il représente : <br>Le temps de conduction entre les atriums et les ventricules.</p>
+                <div class="formula-box">Valeur normale : 0.12 s à 0.20 s (3 à 5 petits carrés)</div>
+
+                <hr>
+
+                <h3>2) QRS Duration</h3>
+                <p>Le QRS Duration est la largeur du complexe QRS.</p>
+                <p>Il représente : <br>La dépolarisation des ventricules.</p>
+                <div class="formula-box">Valeur normale : 0.06 s à 0.10 s (≤ 2.5 petits carrés)</div>
+
+                <hr>
+
+                <h3>3) QT Interval</h3>
+                <p>Le QT Interval est la distance entre : <br><strong>Début du QRS → fin de l’onde T</strong></p>
+                <p>Il représente : <br>La dépolarisation + repolarisation ventriculaire.</p>
+                <div class="formula-box">Valeur normale : ≈ 0.35 s à 0.44 s</div>
+
+                <h3>Résumé</h3>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Intervalle</th>
+                                <th>Définition</th>
+                                <th>Valeur Normale</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>PR Interval</td><td>Début P → début QRS</td><td>0.12 - 0.20 s</td></tr>
+                            <tr><td>QRS Duration</td><td>Largeur du QRS</td><td>0.06 - 0.10 s</td></tr>
+                            <tr><td>QT Interval</td><td>Début QRS → fin T</td><td>0.35 - 0.44 s</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================= -->
+        <!-- Interprétation ECG -->
+        <!-- ========================= -->
+        <section id="ecg-interp">
+            <div class="card" data-aos="fade-up">
+                <h2><i class="fa-solid fa-wave-square"></i> Interprétation des Résultats ECG</h2>
+                
+                <h3>1) PR Interval</h3>
+                <div class="formula-box">Valeur normale : 0.12 s à 0.20 s (3 à 5 petits carrés)</div>
+                
+                <p><strong>PR normal :</strong></p>
+                <ul><li>Conduction normale entre atriums et ventricules</li></ul>
+
+                <p><strong>PR court (&lt; 0.12 s) :</strong></p>
+                <ul>
+                    <li>Conduction trop rapide</li>
+                    <li>Possible voie accessoire</li>
+                    <li>Syndrome de Wolff-Parkinson-White (WPW)</li>
+                </ul>
+
+                <p><strong>PR long (&gt; 0.20 s) :</strong></p>
+                <ul>
+                    <li>Retard de conduction AV</li>
+                    <li>Bloc auriculo-ventriculaire (Bloc AV 1er degré)</li>
+                </ul>
+
+                <hr>
+
+                <h3>2) QRS Duration</h3>
+                <div class="formula-box">Valeur normale : 0.06 s à 0.10 s (&lt; 0.12 s)</div>
+                
+                <p><strong>QRS normal :</strong></p>
+                <ul><li>Dépolarisation ventriculaire normale</li></ul>
+
+                <p><strong>QRS large (&gt; 0.12 s) :</strong></p>
+                <ul>
+                    <li>Retard de conduction ventriculaire</li>
+                    <li>Bloc de branche droit ou gauche</li>
+                    <li>Rythme ventriculaire</li>
+                    <li>Hyperkaliémie possible</li>
+                </ul>
+
+                <p><strong>QRS très étroit :</strong></p>
+                <ul><li>Conduction ventriculaire rapide normale</li></ul>
+
+                <hr>
+
+                <h3>3) QT Interval</h3>
+                <div class="formula-box">Valeur normale : 0.35 s à 0.44 s</div>
+                
+                <p><strong>QT normal :</strong></p>
+                <ul><li>Activité électrique ventriculaire normale</li></ul>
+
+                <p><strong>QT long :</strong></p>
+                <ul>
+                    <li>Risque d’arythmie grave</li>
+                    <li>Torsades de pointes</li>
+                    <li>Effet secondaire de médicaments</li>
+                    <li>Hypocalcémie ou hypokaliémie</li>
+                </ul>
+
+                <p><strong>QT court :</strong></p>
+                <ul>
+                    <li>Hypercalcémie possible</li>
+                    <li>Syndrome du QT court</li>
+                </ul>
+
+                <h3>Résumé Final</h3>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Mesure</th>
+                                <th>Normale</th>
+                                <th>Si diminuée</th>
+                                <th>Si augmentée</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>PR Interval</td>
+                                <td>0.12 - 0.20 s</td>
+                                <td>WPW / conduction rapide</td>
+                                <td>Bloc AV</td>
+                            </tr>
+                            <tr>
+                                <td>QRS Duration</td>
+                                <td>0.06 - 0.10 s</td>
+                                <td>Normal</td>
+                                <td>Bloc de branche</td>
+                            </tr>
+                            <tr>
+                                <td>QT Interval</td>
+                                <td>0.35 - 0.44 s</td>
+                                <td>Hypercalcémie</td>
+                                <td>Torsades de pointes</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    
+
+    <!-- JS Scripts -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({
+            duration: 800,
+            once: true,
+        });
+
+        // Smooth scrolling logic for navigation
+        document.querySelectorAll('nav a').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+</html>

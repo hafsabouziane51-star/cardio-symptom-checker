@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="fr" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Système de Conduction Électrique | Medical Education</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Noto+Sans+Arabic:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary-red: #e63946;
+            --deep-navy: #1d3557;
+            --accent-blue: #457b9d;
+            --soft-blue: #f1faee;
+            --bg-light: #f8f9fa;
+            --text-main: #1d3557;
+            --card-bg: rgba(255, 255, 255, 0.8);
+            --glass-border: rgba(255, 255, 255, 0.5);
+            --shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+            --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        [data-theme="dark"] {
+            --bg-light: #0f172a;
+            --text-main: #f1faee;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --deep-navy: #a8dadc;
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-light);
+            color: var(--text-main);
+            line-height: 1.8;
+            font-family: 'Inter', sans-serif;
+            transition: background-color 0.5s ease;
+            overflow-x: hidden;
+        }
+
+        /* Arabic Typography override */
+        [lang="ar"] body {
+            font-family: 'Noto+Sans+Arabic', 'Inter', sans-serif;
+        }
+
+        /* --- Components --- */
+        
+        #progress-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            z-index: 2000;
+        }
+        #progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-red), var(--accent-blue));
+            width: 0%;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 5%;
+            background: var(--card-bg);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid var(--glass-border);
+            z-index: 1000;
+            box-shadow: var(--shadow);
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--primary-red);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        select, .theme-toggle {
+            padding: 10px 15px;
+            border-radius: 12px;
+            border: 1px solid var(--accent-blue);
+            background: transparent;
+            color: var(--text-main);
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        select:hover, .theme-toggle:hover {
+            background: var(--accent-blue);
+            color: white;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 140px auto 80px;
+            padding: 0 24px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 5rem;
+            animation: fadeInDown 1s ease;
+        }
+
+        h1 {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            color: var(--deep-navy);
+            line-height: 1.2;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 28px;
+            padding: clamp(1.5rem, 5vw, 3rem);
+            margin-bottom: 3rem;
+            box-shadow: var(--shadow);
+            opacity: 0;
+            transform: translateY(40px);
+            transition: var(--transition);
+        }
+
+        .card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        h2 {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            color: var(--primary-red);
+            margin-bottom: 1.8rem;
+            font-size: clamp(1.4rem, 3vw, 2rem);
+        }
+
+        p {
+            margin-bottom: 1.5rem;
+            font-size: 1.15rem;
+            opacity: 0.95;
+        }
+
+        .highlight {
+            color: var(--accent-blue);
+            font-weight: 700;
+            background: rgba(69, 123, 157, 0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .medical-img {
+            width: 100%;
+            height: auto;
+            border-radius: 24px;
+            margin: 30px 0;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--glass-border);
+        }
+
+        ul {
+            list-style: none;
+            display: grid;
+            gap: 15px;
+        }
+
+        li {
+            padding: 1.5rem;
+            background: rgba(69, 123, 157, 0.06);
+            border-radius: 16px;
+            border-left: 5px solid var(--primary-red);
+            font-size: 1.1rem;
+        }
+
+        /* RTL Handling */
+        [dir="rtl"] li {
+            border-left: none;
+            border-right: 5px solid var(--primary-red);
+        }
+        [dir="rtl"] h2 i {
+            margin-left: 0;
+            margin-right: 10px;
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            .container { margin-top: 110px; }
+            .logo span { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="progress-container"><div id="progress-bar"></div></div>
+
+<nav>
+ 
+    <div class="controls">
+        <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Theme">
+            <i class="fa-solid fa-moon"></i>
+        </button>
+        <select id="langSwitcher" onchange="changeLanguage(this.value)">
+            <option value="fr">🇫🇷 Français</option>
+            <option value="en">🇬🇧 English</option>
+            <option value="ar">🇩🇿 العربية</option>
+        </select>
+    </div>
+</nav>
+
+<div class="container">
+    <header>
+        <h1 id="main-title">Qu’est ce que le système de conduction électrique ?</h1>
+    </header>
+
+    <div id="dynamic-content">
+        <!-- Content will be injected here by JavaScript -->
+    </div>
+</div>
+
+<script>
+    const translations = {
+        fr: {
+            title: "Qu’est ce que le système de conduction électrique ?",
+            sections: [
+                {
+                    type: "text",
+                    paragraphs: [
+                        "Le cœur fonctionne grâce à un système électrique interne qui assure une coordination parfaite des battements. Le système de conduction électrique du cœur est un réseau de cellules spécialisées qui produisent et transmettent des impulsions électriques à travers le cœur. Cette activité électrique déclenche les contractions régulières du cœur, permettant ainsi la circulation efficace du sang dans tout le corps.",
+                        "Ces contractions sont déclenchées par des changements successifs de l’état électrique des cellules du cœur. Ce processus, appelé <span class='highlight'>dépolarisation</span> et <span class='highlight'>repolarisation</span>, se produit de manière ordonnée pour coordonner chaque battement."
+                    ]
+                },
+                {
+                    type: "list",
+                    title: "Les composants du système de conduction électrique",
+                    icon: "fa-circle-nodes",
+                    intro: "Le système de conduction électrique cardiaque est composé de plusieurs structures clés :",
+                    items: [
+                        "<strong>Noeud sinusal :</strong> situé dans la paroi de l’oreillette droite, il agit comme le « chef d’orchestre » du rythme cardiaque. C’est ce nœud qui initie les impulsions électriques de chaque battement de cœur.",
+                        "<strong>Noeud auriculo-ventriculaire :</strong> situé entre les oreillettes et les ventricules, il reçoit l’impulsion électrique du nœud sinusal et la ralentit légèrement. Ce léger délai permet aux oreillettes de se contracter et de remplir les ventricules de sang avant que ceux-ci ne se contractent à leur tour.",
+                        "<strong>Faisceau de His :</strong> ce faisceau de fibres conduit l’impulsion des oreillettes jusqu’aux ventricules.",
+                        "<strong>Branches du faisceau de His :</strong> une fois l’impulsion transmise, le faisceau de His se divise en deux branches, droite et gauche, qui permettent à l’impulsion d’atteindre chaque ventricule.",
+                        "<strong>Fibres de Purkinje (ou réseau de Purkinje) :</strong> situées dans les parois des ventricules, ces fibres distribuent l’impulsion électrique de manière rapide et coordonnée, assurant une contraction simultanée des ventricules pour un pompage puissant et efficace du sang."
+                    ],
+                    image: "schemas-article-educoeur-1-1024x576.webp"
+                },
+                {
+                    type: "mechanism",
+                    title: "Le fonctionnement du système de conduction électrique",
+                    subtitle: "Qu’est ce la dépolarisation et la repolarisation ?",
+                    icon: "fa-bolt",
+                    paragraphs: [
+                        "Les cellules du cœur ont des charges électriques à l’intérieur et à l’extérieur de leurs membranes. Cela s’appelle le potentiel de membrane. Au repos, l’intérieur des cellules est négativement chargé par rapport à l’extérieur.",
+                        "Lorsque le cœur reçoit un signal électrique, des canaux ioniques (portes microscopiques) s’ouvrent dans la membrane cellulaire, permettant à des ions positifs (comme le sodium et le calcium) d’entrer dans la cellule. Cela change la charge interne de la cellule, qui devient alors plus positive.",
+                        "Ce changement de charge se propage de cellule en cellule, provoquant une contraction des cellules du cœur, appelées cardiomyocytes, comme une vague qui se déplace dans le cœur. Ce processus est la dépolarisation.",
+                        "Ensuite, le cœur doit se préparer pour le prochain battement. C’est là qu’intervient la repolarisation. Cette fois, d'autres canaux s’ouvrent pour laisser sortir des ions (comme le potassium), ce qui rétablit la charge négative initiale de la cellule.",
+                        "Une fois que les cellules sont revenues à leur état de repos, elles sont prêtes à recevoir un nouveau signal électrique."
+                    ],
+                    image: "pm-cellules-cardiaques-1024x576.webp"
+                },
+                {
+                    type: "pathway",
+                    title: "La conduction électrique dans les cellules cardiaques",
+                    icon: "fa-wave-square",
+                    paragraphs: [
+                        "L’impulsion électrique du cœur est initiée par des cellules spécialisées appelées cellules pacemaker situées principalement dans le nœud sinusal. Ces cellules génèrent spontanément et de façon régulière des impulsions électriques, sans besoin de signal extérieur.",
+                        "Cette impulsion électrique se propage ensuite à travers les oreillettes, ce qui les fait se contracter pour envoyer le sang dans les ventricules.",
+                        "L’impulsion électrique atteint ensuite le nœud auriculo-ventriculaire où elle est légèrement ralentie pour permettre aux ventricules de bien se remplir de sang.",
+                        "Puis, l’impulsion se déplace vers les ventricules par les branches du faisceau de His et les fibres de Purkinje. Cela provoque la contraction coordonnée des ventricules et l’envoi du sang vers les artères aorte et pulmonaire."
+                    ]
+                },
+                {
+                    type: "measurement",
+                    title: "Comment mesurer l’activité électrique du cœur ?",
+                    icon: "fa-file-medical",
+                    paragraphs: [
+                        "L’activité électrique du cœur est mesurée grâce à un électrocardiogramme (aussi appelé ECG). Ce test enregistre les signaux électriques produits par chaque battement cardiaque grâce à des électrodes (capteurs) placées sur le torse, les bras et les jambes du patient.",
+                        "Les signaux sont traduits sous forme d’ondes, visibles sur un écran et imprimées sur du papier. Chaque onde correspond à une étape de la conduction électrique du coeur, de la contraction des oreillettes jusqu’à la relaxation des ventricules. Ces ondes sont nommées : P, Q, R, S et T."
+                    ],
+                    image: "ondes-ecg-1-1024x576.webp"
+                },
+                {
+                    type: "disorders",
+                    title: "Les dysfonctionnements du système de conduction électrique",
+                    icon: "fa-triangle-exclamation",
+                    intro: "Les irrégularités dans l’activité cardiaque sont nommées arythmies ou troubles du rythme cardiaque. Elles se produisent lorsque la propagation de l’influx électrique ne fonctionne pas normalement. Selon l’endroit où la façon dont le dysfonctionnement se produit, différentes pathologies peuvent apparaître :",
+                    items: [
+                        "<strong>Bradycardie :</strong> le rythme cardiaque est anormalement lent, ce qui peut empêcher le sang d’être correctement distribué dans le corps.",
+                        "<strong>Tachycardie :</strong> le cœur bat anormalement vite, ce qui peut être fatigant pour le cœur et réduire l’efficacité de la circulation sanguine.",
+                        "<strong>Fibrillation auriculaire :</strong> le rythme électrique est désorganisé dans les oreillettes, entraînant une contraction irrégulière et souvent rapide. Cela peut favoriser la formation de caillots.",
+                        "<strong>Fibrillation ventriculaire :</strong> un dérèglement dans les ventricules provoque des contractions rapides et non coordonnées, ce qui empêche le cœur de pomper efficacement. C'est une urgence médicale.",
+                        "<strong>Blocs de branche :</strong> il s’agit d’un retard ou d’un blocage de la conduction électrique dans une des branches du faisceau de His."
+                    ],
+                    footer: "Ces troubles peuvent être sans conséquence ou entraîner des symptômes variés, comme des palpitations, des étourdissements, de la fatigue ou même un malaise. Certains nécessitent une surveillance régulière, tandis que d’autres peuvent nécessiter des traitements spécifiques."
+                }
+            ]
+        },
+        en: {
+            title: "What is the Cardiac Electrical Conduction System?",
+            sections: [
+                {
+                    type: "text",
+                    paragraphs: [
+                        "The heart functions thanks to an internal electrical system that ensures perfect coordination of the beats. The heart's electrical conduction system is a network of specialized cells that produce and transmit electrical impulses throughout the heart. This electrical activity triggers the regular contractions of the heart, allowing efficient blood circulation throughout the body.",
+                        "These contractions are triggered by successive changes in the electrical state of the heart cells. This process, called <span class='highlight'>depolarization</span> and <span class='highlight'>repolarization</span>, occurs in an orderly manner to coordinate each beat."
+                    ]
+                },
+                {
+                    type: "list",
+                    title: "Components of the Electrical Conduction System",
+                    icon: "fa-circle-nodes",
+                    intro: "The cardiac electrical conduction system is composed of several key structures:",
+                    items: [
+                        "<strong>Sinoatrial (SA) Node:</strong> located in the wall of the right atrium, it acts as the 'conductor' of the heart rhythm. This node initiates the electrical impulses of each heartbeat.",
+                        "<strong>Atrioventricular (AV) Node:</strong> located between the atria and the ventricles, it receives the electrical impulse from the SA node and slows it down slightly. This delay allows the atria to contract and fill the ventricles with blood before they contract.",
+                        "<strong>Bundle of His:</strong> this bundle of fibers conducts the impulse from the atria down to the ventricles.",
+                        "<strong>Bundle Branches:</strong> once the impulse is transmitted, the Bundle of His divides into two branches, right and left, allowing the impulse to reach each ventricle.",
+                        "<strong>Purkinje Fibers:</strong> located in the ventricular walls, these fibers distribute the electrical impulse rapidly and in a coordinated manner, ensuring simultaneous contraction of the ventricles for powerful blood pumping."
+                    ],
+                    image: "schemas-article-educoeur-1-1024x576.webp"
+                },
+                {
+                    type: "mechanism",
+                    title: "How the Electrical Conduction System Works",
+                    subtitle: "What are Depolarization and Repolarization?",
+                    icon: "fa-bolt",
+                    paragraphs: [
+                        "Heart cells have electrical charges inside and outside their membranes. This is called the membrane potential. At rest, the inside of the cells is negatively charged relative to the outside.",
+                        "When the heart receives an electrical signal, ion channels (microscopic gates) open in the cell membrane, allowing positive ions (like sodium and calcium) to enter the cell. This changes the cell's internal charge, making it more positive.",
+                        "This charge change spreads from cell to cell, causing heart cells (cardiomyocytes) to contract like a wave moving through the heart. This process is depolarization.",
+                        "Then, the heart must prepare for the next beat through repolarization. Other channels open to let ions (like potassium) out, restoring the cell's initial negative charge.",
+                        "Once the cells return to their resting state, they are ready to receive a new electrical signal."
+                    ],
+                    image: "pm-cellules-cardiaques-1024x576.webp"
+                },
+                {
+                    type: "pathway",
+                    title: "Electrical Conduction in Cardiac Cells",
+                    icon: "fa-wave-square",
+                    paragraphs: [
+                        "The heart's electrical impulse is initiated by specialized cells called pacemaker cells located primarily in the SA node. These cells spontaneously and regularly generate electrical impulses without needing an external signal.",
+                        "This impulse then spreads through the atria, causing them to contract and send blood into the ventricles.",
+                        "The impulse reaches the AV node where it is slowed slightly to allow the ventricles to fill properly with blood.",
+                        "Finally, the impulse travels to the ventricles through the bundle branches and Purkinje fibers. This causes coordinated contraction of the ventricles, sending blood to the aorta and pulmonary arteries."
+                    ]
+                },
+                {
+                    type: "measurement",
+                    title: "How to Measure the Heart's Electrical Activity?",
+                    icon: "fa-file-medical",
+                    paragraphs: [
+                        "The heart's electrical activity is measured using an electrocardiogram (ECG). This test records the electrical signals produced by each heartbeat using electrodes (sensors) placed on the chest, arms, and legs.",
+                        "The signals are translated into waves visible on a screen or paper. Each wave corresponds to a step in the heart's conduction, from atrial contraction to ventricular relaxation. These waves are named: P, Q, R, S, and T."
+                    ],
+                    image: "ondes-ecg-1-1024x576.webp"
+                },
+                {
+                    type: "disorders",
+                    title: "Dysfunctions of the Electrical Conduction System",
+                    icon: "fa-triangle-exclamation",
+                    intro: "Irregularities in cardiac activity are called arrhythmias or heart rhythm disorders. They occur when the propagation of the electrical impulse does not function normally. Depending on where the dysfunction occurs, different pathologies can appear:",
+                    items: [
+                        "<strong>Bradycardia:</strong> heart rate is abnormally slow, which can prevent blood from being correctly distributed to the body.",
+                        "<strong>Tachycardia:</strong> heart beats abnormally fast, which can fatigue the heart and reduce circulation efficiency.",
+                        "<strong>Atrial Fibrillation:</strong> electrical rhythm is disorganized in the atria, leading to irregular contractions and increased stroke risk.",
+                        "<strong>Ventricular Fibrillation:</strong> a malfunction in the ventricles causing rapid, uncoordinated contractions. This is a medical emergency.",
+                        "<strong>Bundle Branch Blocks:</strong> a delay or blockage of electrical conduction in one of the branches of the Bundle of His."
+                    ],
+                    footer: "These disorders can be harmless or cause varied symptoms like palpitations, dizziness, or fatigue. Some require regular monitoring or specific medical intervention."
+                }
+            ]
+        },
+        ar: {
+            title: "ما هو نظام التوصيل الكهربائي للقلب؟",
+            sections: [
+                {
+                    type: "text",
+                    paragraphs: [
+                        "يعمل القلب بفضل نظام كهربائي داخلي يضمن تنسيقًا مثاليًا لضربات القلب. نظام التوصيل الكهربائي للقلب هو شبكة من الخلايا المتخصصة التي تنتج وتنقل النبضات الكهربائية عبر القلب. هذا النشاط الكهربائي يحفز الانقباضات المنتظمة للقلب، مما يسمح بدوران الدم بفعالية في جميع أنحاء الجسم.",
+                        "يتم تحفيز هذه الانقباضات من خلال تغيرات متتالية في الحالة الكهربائية لخلايا القلب. هذه العملية، التي تسمى <span class='highlight'>إزالة الاستقطاب</span> و <span class='highlight'>إعادة الاستقطاب</span>، تحدث بطريقة منظمة لتنسيق كل نبضة."
+                    ]
+                },
+                {
+                    type: "list",
+                    title: "مكونات نظام التوصيل الكهربائي",
+                    icon: "fa-circle-nodes",
+                    intro: "يتكون نظام التوصيل الكهربائي للقلب من عدة هياكل رئيسية:",
+                    items: [
+                        "<strong>العقدة الجيبية:</strong> تقع في جدار الأذين الأيمن، وتعمل بمثابة 'المايسترو' لإيقاع القلب. هي التي تبدأ النبضات الكهربائية لكل نبضة قلب.",
+                        "<strong>العقدة الأذينية البطينية:</strong> تقع بين الأذينين والبطينين، وتستقبل النبضة من العقدة الجيبية وتبطئها قليلاً. يسمح هذا التأخير للأذينين بالانقباض وملء البطينين بالدم قبل انقباضهما.",
+                        "<strong>حزمة هيس:</strong> تقوم هذه الحزمة من الألياف بتوصيل النبضات من الأذينين إلى البطينين.",
+                        "<strong>أغصان حزمة هيس:</strong> بمجرد نقل النبضة، تنقسم الحزمة إلى غصنين، أيمن وأيسر، مما يسمح للنبضة بالوصول إلى كل بطين.",
+                        "<strong>ألياف بوركينجي:</strong> تقع في جدران البطينين، وتوزع النبضة الكهربائية بسرعة وبشكل منسق، مما يضمن انقباض البطينين في وقت واحد لضخ الدم بقوة."
+                    ],
+                    image: "schemas-article-educoeur-1-1024x576.webp"
+                },
+                {
+                    type: "mechanism",
+                    title: "آلية عمل نظام التوصيل الكهربائي",
+                    subtitle: "ما هي عملية إزالة الاستقطاب وإعادة الاستقطاب؟",
+                    icon: "fa-bolt",
+                    paragraphs: [
+                        "تمتلك خلايا القلب شحنات كهربائية داخل وخارج أغشيتها. وهذا ما يسمى بجهد الغشاء. في حالة الراحة، تكون الخلايا مشحونة سلبًا من الداخل مقارنة بالخارج.",
+                        "عندما يتلقى القلب إشارة كهربائية، تفتح القنوات الأيونية (بوابات مجهرية) في غشاء الخلية، مما يسمح للأيونات الموجبة (مثل الصوديوم والكالسيوم) بالدخول. يؤدي هذا إلى تغيير الشحنة الداخلية للخلية لتصبح أكثر إيجابية.",
+                        "ينتشر هذا التغيير في الشحنة من خلية إلى أخرى، مما يسبب انقباض خلايا القلب (الخلايا العضلية القلبية) مثل الموجة. هذه العملية هي إزالة الاستقطاب.",
+                        "بعد ذلك، يجب على القلب الاستعداد للنبضة التالية من خلال إعادة الاستقطاب. تفتح قنوات أخرى للسماح بخروج الأيونات (مثل البوتاسيوم)، مما يعيد الشحنة السالبة الأصلية للخلية.",
+                        "بمجرد عودة الخلايا إلى حالة الراحة، تصبح جاهزة لاستقبال إشارة كهربائية جديدة."
+                    ],
+                    image: "pm-cellules-cardiaques-1024x576.webp"
+                },
+                {
+                    type: "pathway",
+                    title: "التوصيل الكهربائي في خلايا القلب",
+                    icon: "fa-wave-square",
+                    paragraphs: [
+                        "تبدأ النبضة الكهربائية للقلب بواسطة خلايا متخصصة تسمى خلايا تنظيم ضربات القلب تقع أساسًا في العقدة الجيبية. تولد هذه الخلايا نبضات كهربائية تلقائيًا وبانتظام.",
+                        "تنتشر هذه النبضة الكهربائية بعد ذلك عبر الأذينين، مما يجعلهما ينقبضان لإرسال الدم إلى البطينين.",
+                        "تصل النبضة بعد ذلك إلى العقدة الأذينية البطينية حيث يتم إبطاؤها قليلاً للسماح للبطينين بالامتلاء جيدًا بالدم.",
+                        "ثم تنتقل النبضة إلى البطينين عبر أغصان حزمة هيس وألياف بوركينجي، مما يسبب انقباضًا منسقًا للبطينين وضخ الدم نحو الشرايين."
+                    ]
+                },
+                {
+                    type: "measurement",
+                    title: "كيف يتم قياس النشاط الكهربائي للقلب؟",
+                    icon: "fa-file-medical",
+                    paragraphs: [
+                        "يتم قياس النشاط الكهربائي للقلب باستخدام تخطيط كهربائية القلب (ECG). يسجل هذا الاختبار الإشارات الكهربائية الناتجة عن كل نبضة باستخدام أقطاب كهربائية توضع على الصدر والذراعين والساقين.",
+                        "تترجم الإشارات على شكل موجات تظهر على الشاشة أو الورق. تقابل كل موجة خطوة في التوصيل الكهربائي، من انقباض الأذينين إلى استرخاء البطينين. تسمى هذه الموجات: P و Q و R و S و T."
+                    ],
+                    image: "ondes-ecg-1-1024x576.webp"
+                },
+                {
+                    type: "disorders",
+                    title: "اختلالات نظام التوصيل الكهربائي",
+                    icon: "fa-triangle-exclamation",
+                    intro: "تسمى عدم الانتظام في نشاط القلب بـ 'عدم انتظام ضربات القلب'. وتحدث عندما لا ينتشر الدافع الكهربائي بشكل طبيعي. تظهر أمراض مختلفة حسب مكان حدوث الخلل:",
+                    items: [
+                        "<strong>بطء القلب:</strong> معدل ضربات القلب بطيء بشكل غير طبيعي، مما قد يمنع توزيع الدم بشكل كافٍ.",
+                        "<strong>تسارع القلب:</strong> ينبض القلب بسرعة غير طبيعية، مما قد يجهد القلب ويقلل من كفاءة الدورة الدموية.",
+                        "<strong>الرجفان الأذيني:</strong> الإيقاع الكهربائي غير منظم في الأذينين، مما يؤدي إلى انقباض غير منتظم ويزيد من خطر الإصابة بالسكتة الدماغية.",
+                        "<strong>الرجفان البطيني:</strong> خلل في البطينين يسبب انقباضات سريعة وغير منسقة، وهي حالة طبية طارئة.",
+                        "<strong>إحصارات الأغصان:</strong> تأخير أو انقطاع في التوصيل الكهربائي في أحد أغصان حزمة هيس."
+                    ],
+                    footer: "يمكن أن تكون هذه الاضطرابات بدون عواقب أو تؤدي إلى أعراض متنوعة مثل الخفقان أو الدوار أو التعب. بعضها يتطلب مراقبة منتظمة أو تدخلًا طبيًا."
+                }
+            ]
+        }
+    };
+
+    function changeLanguage(lang) {
+        const data = translations[lang];
+        document.documentElement.lang = lang;
+        document.documentElement.dir = (lang === 'ar') ? 'rtl' : 'ltr';
+        
+        // Update Title
+        document.getElementById('main-title').innerText = data.title;
+        
+        // Build Content Sections
+        const container = document.getElementById('dynamic-content');
+        container.innerHTML = ''; // Clear current
+
+        data.sections.forEach(section => {
+            const card = document.createElement('section');
+            card.className = 'card';
+            
+            let html = '';
+            
+            if (section.title) {
+                html += `<h2><i class="fa-solid ${section.icon}"></i> ${section.title}</h2>`;
+            }
+
+            if (section.subtitle) {
+                html += `<h2 style="color:var(--accent-blue); font-size:1.3rem;">${section.subtitle}</h2>`;
+            }
+
+            if (section.intro) {
+                html += `<p>${section.intro}</p>`;
+            }
+
+            if (section.paragraphs) {
+                section.paragraphs.forEach(p => {
+                    html += `<p>${p}</p>`;
+                });
+            }
+
+            if (section.items) {
+                html += `<ul>`;
+                section.items.forEach(item => {
+                    html += `<li>${item}</li>`;
+                });
+                html += `</ul>`;
+            }
+
+            if (section.image) {
+                html += `<img src="${section.image}" alt="Medical Diagram" class="medical-img">`;
+            }
+
+            if (section.footer) {
+                html += `<p style="margin-top:20px;">${section.footer}</p>`;
+            }
+
+            card.innerHTML = html;
+            container.appendChild(card);
+            
+            // Re-observe the new element for animations
+            observer.observe(card);
+        });
+    }
+
+    // Intersection Observer for Animations
+    const observerOptions = { threshold: 0.1 };
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+            }
+        });
+    }, observerOptions);
+
+    // Theme Toggle
+    function toggleTheme() {
+        const body = document.body;
+        const icon = document.querySelector('.theme-toggle i');
+        if (body.getAttribute('data-theme') === 'dark') {
+            body.removeAttribute('data-theme');
+            icon.className = 'fa-solid fa-moon';
+        } else {
+            body.setAttribute('data-theme', 'dark');
+            icon.className = 'fa-solid fa-sun';
+        }
+    }
+
+    // Scroll Progress Bar
+    window.onscroll = function() {
+        const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+        const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        const scrolled = (winScroll / height) * 100;
+        document.getElementById("progress-bar").style.width = scrolled + "%";
+    };
+
+    // Initialize
+    changeLanguage('fr');
+</script>
+
+</body>
+</html>

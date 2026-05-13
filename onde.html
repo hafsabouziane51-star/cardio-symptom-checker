@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ECG Mastery Quiz</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #e74c3c;
+            --success: #27ae60;
+            --bg: #f8fafd;
+            --white: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Support pour l'Arabe (RTL) */
+        .rtl { direction: rtl; text-align: right; font-family: 'Arial', sans-serif; }
+        .rtl .option-btn { text-align: right; }
+
+        #quiz-container {
+            background: var(--white);
+            width: 100%;
+            max-width: 600px;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        }
+
+        .lang-switcher {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        .lang-btn {
+            padding: 8px 15px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .lang-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: #eee;
+            border-radius: 3px;
+            margin-bottom: 30px;
+        }
+
+        #progress {
+            height: 100%;
+            background: var(--secondary);
+            width: 0%;
+            border-radius: 3px;
+            transition: 0.4s;
+        }
+
+        .question {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 25px;
+        }
+
+        .options-grid {
+            display: grid;
+            gap: 12px;
+        }
+
+        .option-btn {
+            padding: 18px;
+            border: 2px solid #edf2f7;
+            border-radius: 12px;
+            background: white;
+            cursor: pointer;
+            font-size: 16px;
+            text-align: left;
+            transition: 0.2s;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            border-color: var(--secondary);
+            background: #fffafa;
+        }
+
+        .option-btn.correct { background: var(--success); color: white; border-color: var(--success); }
+        .option-btn.wrong { background: var(--secondary); color: white; border-color: var(--secondary); }
+
+        #feedback {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            display: none;
+            font-weight: 500;
+        }
+
+        .next-btn {
+            width: 100%;
+            margin-top: 25px;
+            padding: 18px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            display: none;
+        }
+
+        .result-screen { text-align: center; }
+        .score-text { font-size: 50px; font-weight: 800; color: var(--secondary); }
+    
+    @media (max-width: 600px) {
+    #quiz-container {
+        padding: 18px;
+        border-radius: 15px;
+    }
+
+    .question {
+        font-size: 17px;
+        line-height: 1.4;
+    }
+
+    .option-btn {
+        font-size: 15px;
+        padding: 14px;
+    }
+
+    .lang-switcher {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .lang-btn {
+        padding: 6px 10px;
+        font-size: 12px;
+    }
+
+    .score-text {
+        font-size: 36px;
+    }
+
+    .next-btn {
+        padding: 14px;
+        font-size: 15px;
+    }
+}
+    
+    
+    </style>
+</head>
+<body>
+
+<div id="quiz-container">
+    <div class="lang-switcher">
+        <button class="lang-btn active" onclick="setLanguage('fr')">Français</button>
+        <button class="lang-btn" onclick="setLanguage('en')">English</button>
+        <button class="lang-btn" onclick="setLanguage('ar')">العربية</button>
+    </div>
+
+    <div class="progress-bar"><div id="progress"></div></div>
+
+    <div id="quiz-content">
+        <div class="question" id="q-text"></div>
+        <div class="options-grid" id="options-box"></div>
+        <div id="feedback"></div>
+        <button class="next-btn" id="next-btn" onclick="nextQuestion()">Suivant</button>
+    </div>
+</div>
+
+<script>
+    let currentLang = 'fr';
+    let currentIndex = 0;
+    let score = 0;
+
+    const translations = {
+        fr: { next: "Question Suivante", result: "Résultat Final", restart: "Recommencer" },
+        en: { next: "Next Question", result: "Final Result", restart: "Restart" },
+        ar: { next: "السؤال التالي", result: "النتيجة النهائية", restart: "إعادة الاختبار" }
+    };
+
+    const quizData = [
+        {
+            q: { fr: "L'onde P représente :", en: "P wave represents:", ar: "تمثل موجة P:" },
+            options: {
+                fr: ["Dépolarisation ventriculaire", "Repolarisation ventriculaire", "Dépolarisation auriculaire", "Pause électrique"],
+                en: ["Ventricular depolarization", "Ventricular repolarization", "Atrial depolarization", "Electrical pause"],
+                ar: ["إزالة الاستقطاب البطيني", "إعادة استقطاب البطينات", "إزالة الاستقطاب الأذيني", "توقف كهربائي"]
+            },
+            correct: 2
+        },
+        {
+            q: { fr: "Valeur normale de l’intervalle PR :", en: "Normal PR interval value:", ar: "القيمة الطبيعية لفترة PR:" },
+            options: {
+                fr: ["0.06 – 0.10 s", "0.12 – 0.20 s", "0.30 – 0.40 s", "0.50 – 0.60 s"],
+                en: ["0.06 – 0.10 s", "0.12 – 0.20 s", "0.30 – 0.40 s", "0.50 – 0.60 s"],
+                ar: ["0.06 – 0.10 ثانية", "0.12 – 0.20 ثانية", "0.30 – 0.40 ثانية", "0.50 – 0.60 ثانية"]
+            },
+            correct: 1
+        },
+        {
+            q: { fr: "Bradycardie est définie par :", en: "Bradycardia is defined by:", ar: "يتم تعريف بطء القلب من خلال:" },
+            options: {
+                fr: ["FC > 100 bpm", "FC < 60 bpm", "FC = 75 bpm", "R-R irrégulier"],
+                en: ["HR > 100 bpm", "HR < 60 bpm", "HR = 75 bpm", "Irregular R-R"],
+                ar: ["نبض > 100 نبضة/د", "نبض < 60 نبضة/د", "نبض = 75 نبضة/د", "R-R غير منتظم"]
+            },
+            correct: 1
+        },
+        {
+            q: { fr: "Méthode des grands carrés (FC régulière) :", en: "Large square method (Regular HR):", ar: "طريقة المربعات الكبيرة (نبض منتظم):" },
+            options: {
+                fr: ["1500 ÷ petits carrés", "60 ÷ RR", "300 ÷ grands carrés", "QRS × 10"],
+                en: ["1500 ÷ small squares", "60 ÷ RR", "300 ÷ large squares", "QRS × 10"],
+                ar: ["1500 ÷ المربعات الصغيرة", "60 ÷ RR", "300 ÷ المربعات الكبيرة", "QRS × 10"]
+            },
+            correct: 2
+        }
+        // ... Vous pouvez ajouter les 15 questions ici sur le même modèle
+    ];
+
+    function setLanguage(lang) {
+        currentLang = lang;
+        document.body.className = (lang === 'ar') ? 'rtl' : '';
+        
+        // Mise à jour visuelle des boutons de langue
+        document.querySelectorAll('.lang-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.innerText.toLowerCase().includes(lang === 'fr' ? 'fr' : lang === 'en' ? 'en' : 'عرب'));
+        });
+
+        loadQuestion();
+    }
+
+    function loadQuestion() {
+        if (currentIndex >= quizData.length) return showResults();
+
+        const data = quizData[currentIndex];
+        document.getElementById('q-text').innerText = data.q[currentLang];
+        
+        const optionsBox = document.getElementById('options-box');
+        optionsBox.innerHTML = '';
+        
+        data.options[currentLang].forEach((opt, i) => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.innerText = opt;
+            btn.onclick = () => checkAnswer(i);
+            optionsBox.appendChild(btn);
+        });
+
+        document.getElementById('next-btn').style.display = 'none';
+        document.getElementById('feedback').style.display = 'none';
+        updateProgress();
+    }
+
+    function checkAnswer(selected) {
+        const correct = quizData[currentIndex].correct;
+        const btns = document.querySelectorAll('.option-btn');
+        
+        btns.forEach(btn => btn.disabled = true);
+
+        if (selected === correct) {
+            btns[selected].classList.add('correct');
+            score++;
+        } else {
+            btns[selected].classList.add('wrong');
+            btns[correct].classList.add('correct');
+        }
+
+        document.getElementById('next-btn').innerText = translations[currentLang].next;
+        document.getElementById('next-btn').style.display = 'block';
+    }
+
+    function nextQuestion() {
+        currentIndex++;
+        loadQuestion();
+    }
+
+    function updateProgress() {
+        const prog = (currentIndex / quizData.length) * 100;
+        document.getElementById('progress').style.width = prog + '%';
+    }
+
+    function showResults() {
+        const container = document.getElementById('quiz-content');
+        container.innerHTML = `
+            <div class="result-screen">
+                <h2>${translations[currentLang].result}</h2>
+                <div class="score-text">${score} / ${quizData.length}</div>
+                <button class="next-btn" style="display:block" onclick="location.reload()">
+                    ${translations[currentLang].restart}
+                </button>
+            </div>
+        `;
+    }
+
+    loadQuestion();
+</script>
+
+</body>
+</html>

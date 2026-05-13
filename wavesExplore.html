@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Waves ECG | Advanced Clinical Engine</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #030507;
+            --panel: rgba(13, 17, 23, 0.85);
+            --cyan: #00f2ff;
+            --red: #ff0055;
+            --amber: #ffaa00;
+            --border: rgba(255, 255, 255, 0.1);
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+        }
+
+        * { box-sizing: border-box; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+
+        body {
+            margin: 0; background: var(--bg); color: var(--text-primary);
+            font-family: 'Inter', sans-serif; display: flex; flex-direction: column;
+            height: 100vh; overflow: hidden;
+        }
+
+        /* --- Header: Telemetry Bar --- */
+        header {
+            padding: 12px 25px; display: flex; align-items: center; justify-content: space-between;
+            background: #000; border-bottom: 1px solid var(--border); z-index: 50;
+        }
+        .brand { font-weight: 600; letter-spacing: 2px; font-size: 0.9rem; text-transform: uppercase; }
+        .monitor-data { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--cyan); }
+
+        /* --- Main Layout: Unified Engine --- */
+        .engine-container {
+            display: grid; grid-template-columns: 300px 1fr; flex-grow: 1; overflow: hidden;
+        }
+
+        /* Sidebar: Clinical Case Selector */
+        .sidebar {
+            background: var(--bg); padding: 20px; border-right: 1px solid var(--border);
+            display: flex; flex-direction: column; gap: 15px;
+        }
+        .label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-secondary); }
+        
+        .case-card {
+            background: var(--panel); border: 1px solid var(--border); padding: 15px; border-radius: 12px;
+            cursor: pointer; position: relative;
+        }
+        .case-card:hover { border-color: #444; background: rgba(255,255,255,0.05); }
+        .case-card.active { border-left: 4px solid var(--cyan); border-color: var(--cyan); }
+        .case-card h4 { margin: 0; font-size: 0.9rem; color: var(--text-primary); }
+        .case-card p { margin: 5px 0 0 0; font-size: 0.75rem; color: var(--text-secondary); }
+
+        /* Monitor: The Visualization Layer */
+        .monitor-view {
+            background: #000; position: relative; display: flex; flex-direction: column; padding: 20px;
+        }
+        .screen {
+            flex-grow: 1; background: #000; border-radius: 20px; border: 1px solid #222;
+            position: relative; overflow: hidden;
+            background-image: radial-gradient(rgba(0, 242, 255, 0.1) 1px, transparent 1px);
+            background-size: 30px 30px;
+        }
+        svg { width: 100%; height: 100%; }
+        .segment {
+            fill: none; stroke-width: 3.5; stroke-linecap: round; cursor: pointer;
+            filter: drop-shadow(0 0 5px var(--cyan));
+        }
+        .segment:hover { stroke-width: 6; stroke: #fff !important; }
+
+        /* --- Information Panels: Dual-Layer Interpretation --- */
+        .info-region {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 20px 30px;
+            background: var(--panel); backdrop-filter: blur(20px); border-top: 1px solid var(--border);
+        }
+        .pane h3 { margin-top: 0; color: var(--cyan); font-size: 1.2rem; }
+        .pane p { font-size: 0.9rem; line-height: 1.6; color: var(--text-secondary); margin-bottom: 0; }
+
+        /* --- Mobile Adaptability --- */
+        @media (max-width: 900px) {
+            .engine-container { grid-template-columns: 1fr; overflow-y: auto; }
+            body { overflow-y: auto; height: auto; }
+            .info-region { grid-template-columns: 1fr; }
+            .sidebar { order: 2; height: auto; }
+            .monitor-view { height: 350px; order: 1; }
+            .info-region { order: 3; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="brand">Smart Waves <span style="color:var(--red)">ECG</span></div>
+    <div class="monitor-data">LEAD II // 25mm/s // <span id="bpm-sync">72</span> BPM</div>
+</header>
+
+<main class="engine-container">
+    <aside class="sidebar">
+        <div class="label">Clinical Cases</div>
+        <div class="case-card active" onclick="loadCase('normal', this)">
+            <h4>Normal Sinus Rhythm</h4>
+            <p>Healthy cardiac conduction</p>
+        </div>
+        <div class="case-card" onclick="loadCase('stemi', this)">
+            <h4>Acute Anterior STEMI</h4>
+            <p>Critical ST elevation</p>
+        </div>
+        <div class="case-card" onclick="loadCase('afib', this)">
+            <h4>Atrial Fibrillation</h4>
+            <p>Irregularly irregular</p>
+        </div>
+    </aside>
+
+    <div class="monitor-view">
+        <div class="screen">
+            <svg viewBox="0 0 800 300" preserveAspectRatio="xMidYMid meet">
+                <!-- Interactive Morphing Paths -->
+                <path id="p-seg" class="segment" stroke="var(--cyan)" d="" onclick="inspect('p')" />
+                <path id="qrs-seg" class="segment" stroke="var(--cyan)" d="" onclick="inspect('qrs')" />
+                <path id="t-seg" class="segment" stroke="var(--cyan)" d="" onclick="inspect('t')" />
+            </svg>
+        </div>
+    </div>
+</main>
+
+<footer class="info-region">
+    <div class="pane">
+        <div class="label">Physiology (Phase 1)</div>
+        <h3 id="phys-name">Select Segment</h3>
+        <p id="phys-desc">Explore the electrical activity of the heart by clicking on the waveform components.</p>
+    </div>
+    <div class="pane" style="border-left: 1px solid var(--border); padding-left: 20px;">
+        <div class="label">Interpretation (Phase 2)</div>
+        <h3 id="clin-name">Normal Baseline</h3>
+        <p id="clin-desc">System analysis of the current rhythm will appear here.</p>
+    </div>
+</footer>
+
+<script>
+    const APP_DATABASE = {
+        physiology: {
+            p: { name: "P Wave", desc: "Represents Atrial Depolarization. The SA node initiates an impulse that spreads through the atria, triggering contraction." },
+            qrs: { name: "QRS Complex", desc: "Ventricular Depolarization. Rapid spread of impulse through the Purkinje fibers. Masks Atrial Repolarization." },
+            t: { name: "T Wave", desc: "Ventricular Repolarization. The heart chambers recover and reset electrically for the next beat." }
+        },
+        rhythms: {
+            normal: {
+                title: "Normal Sinus Rhythm",
+                bpm: 72, color: "var(--cyan)",
+                desc: "Rhythm is regular. PR interval is normal. ST segment is isoelectric (at the baseline).",
+                paths: {
+                    p: "M 50,150 Q 80,110 110,150",
+                    qrs: "M 110,150 L 130,150 L 140,190 L 160,50 L 180,210 L 195,150 L 230,150",
+                    t: "M 230,150 Q 280,100 330,150 L 500,150"
+                }
+            },
+            stemi: {
+                title: "STEMI (Myocardial Infarction)",
+                bpm: 98, color: "var(--red)",
+                desc: "CRITICAL: Significant ST-elevation detected. This indicates acute injury to the ventricular muscle due to artery occlusion.",
+                paths: {
+                    p: "M 50,150 Q 80,110 110,150",
+                    qrs: "M 110,150 L 130,150 L 140,190 L 160,50 L 185,90 L 250,90",
+                    t: "M 250,90 Q 290,50 330,150 L 500,150"
+                }
+            },
+            afib: {
+                title: "Atrial Fibrillation",
+                bpm: "115 (Irregular)", color: "var(--amber)",
+                desc: "P-waves are absent, replaced by fibrillatory waves. R-R intervals are 'irregularly irregular'.",
+                paths: {
+                    p: "M 50,152 L 65,148 L 80,151 L 95,149 L 110,150",
+                    qrs: "M 110,150 L 130,150 L 140,190 L 160,50 L 180,210 L 195,150 L 230,150",
+                    t: "M 230,150 Q 280,130 330,150 L 500,150"
+                }
+            }
+        }
+    };
+
+    function loadCase(id, el) {
+        const data = APP_DATABASE.rhythms[id];
+        
+        // Morph Paths
+        document.getElementById('p-seg').setAttribute('d', data.paths.p);
+        document.getElementById('qrs-seg').setAttribute('d', data.paths.qrs);
+        document.getElementById('t-seg').setAttribute('d', data.paths.t);
+
+        // Update Colors & Visuals
+        document.querySelectorAll('.segment').forEach(s => {
+            s.style.stroke = data.color;
+            s.style.filter = `drop-shadow(0 0 8px ${data.color})`;
+        });
+
+        // Update Clinical Pane
+        document.getElementById('clin-name').innerText = data.title;
+        document.getElementById('clin-desc').innerText = data.desc;
+        document.getElementById('bpm-sync').innerText = data.bpm;
+        document.getElementById('bpm-sync').style.color = data.color;
+
+        // UI State
+        document.querySelectorAll('.case-card').forEach(c => c.classList.remove('active'));
+        el.classList.add('active');
+    }
+
+    function inspect(key) {
+        const data = APP_DATABASE.physiology[key];
+        document.getElementById('phys-name').innerText = data.name;
+        document.getElementById('phys-desc').innerText = data.desc;
+    }
+
+    // Initial State
+    window.onload = () => loadCase('normal', document.querySelector('.case-card'));
+</script>
+
+</body>
+</html>

@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multilingual Cardiac Quiz</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #e74c3c; /* Heart Red */
+            --success: #27ae60;
+            --bg: #f4f7f6;
+            --white: #ffffff;
+            --text-dark: #2c3e50;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            transition: direction 0.3s ease;
+        }
+
+        #quiz-container {
+            background: var(--white);
+            width: 100%;
+            max-width: 550px;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        /* Language Selector Bar */
+        .lang-selector {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .lang-btn {
+            background: #eee;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 13px;
+            transition: all 0.2s;
+            color: var(--primary);
+        }
+
+        .lang-btn.active {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            color: var(--primary);
+            margin: 0;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            width: 100%;
+            height: 8px;
+            background: #eee;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        #progress-bar {
+            height: 100%;
+            width: 0%;
+            background: var(--secondary);
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+
+        .question {
+            font-size: 19px;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+
+        .options-container {
+            display: grid;
+            gap: 12px;
+        }
+
+        .option-btn {
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            background: none;
+            cursor: pointer;
+            font-size: 16px;
+            text-align: inherit; /* Dynamically respects RTL/LTR */
+            transition: all 0.2s;
+            color: var(--text-dark);
+        }
+
+        .option-btn:hover {
+            border-color: var(--secondary);
+            background: #fff5f5;
+        }
+
+        .option-btn.correct {
+            background-color: var(--success) !important;
+            color: white;
+            border-color: var(--success);
+        }
+
+        .option-btn.wrong {
+            background-color: var(--secondary) !important;
+            color: white;
+            border-color: var(--secondary);
+        }
+
+        #feedback {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+            line-height: 1.5;
+            font-size: 15px;
+        }
+
+        .next-btn {
+            width: 100%;
+            margin-top: 20px;
+            padding: 15px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            display: none;
+        }
+
+        .next-btn:hover {
+            opacity: 0.9;
+        }
+
+        /* RTL Adjustments */
+        [dir="rtl"] .lang-selector {
+            justify-content: flex-start;
+        }
+
+        .result-screen {
+            text-align: center;
+        }
+
+        .score-circle {
+            font-size: 48px;
+            font-weight: bold;
+            color: var(--secondary);
+            margin: 20px 0;
+        }
+        @media (max-width: 600px) {
+
+    #quiz-container {
+        padding: 18px;
+        border-radius: 12px;
+    }
+
+    .header h1 {
+        font-size: 18px;
+    }
+
+    .question {
+        font-size: 16px;
+    }
+
+    .option-btn {
+        font-size: 14px;
+        padding: 12px;
+    }
+
+    .next-btn {
+        font-size: 14px;
+        padding: 12px;
+    }
+
+    .score-circle {
+        font-size: 36px;
+    }
+
+    .lang-btn {
+        font-size: 11px;
+        padding: 6px 10px;
+    }
+
+    .progress-container {
+        height: 6px;
+    }
+}
+    </style>
+</head>
+<body>
+
+<div id="quiz-container">
+    <!-- Language Selection Header -->
+    <div class="lang-selector">
+        <button class="lang-btn active" onclick="changeLanguage('en')">EN</button>
+        <button class="lang-btn" onclick="changeLanguage('fr')">FR</button>
+        <button class="lang-btn" onclick="changeLanguage('ar')">العربية</button>
+    </div>
+
+    <div id="quiz-content">
+        <div class="header">
+            <h1 id="quiz-title">Cardiac Anatomy Quiz</h1>
+            <div class="progress-container">
+                <div id="progress-bar"></div>
+            </div>
+        </div>
+
+        <div id="question-area">
+            <div class="question" id="question-text">Loading...</div>
+            <div class="options-container" id="options"></div>
+        </div>
+
+        <div id="feedback"></div>
+        <button id="next-button" class="next-btn" onclick="nextQuestion()">Next Question</button>
+    </div>
+</div>
+
+<script>
+    // Localized UI Elements
+    const uiTranslations = {
+        en: {
+            title: "Cardiac Anatomy Quiz",
+            nextBtn: "Next Question",
+            correct: "Correct!",
+            incorrect: "Incorrect",
+            completed: "Quiz Completed!",
+            scoreMsg: "Your score is:",
+            restartBtn: "Restart Quiz",
+            passingMsg: "Congratulations! You have a solid understanding of cardiac anatomy.",
+            failingMsg: "Keep practicing to improve your clinical cardiac knowledge!"
+        },
+        fr: {
+            title: "Quiz d'Anatomie Cardiaque",
+            nextBtn: "Question Suivante",
+            correct: "Correct !",
+            incorrect: "Incorrect",
+            completed: "Quiz Terminé !",
+            scoreMsg: "Votre score est de :",
+            restartBtn: "Recommencer le Quiz",
+            passingMsg: "Félicitations ! Vous maîtrisez les bases de l'anatomie cardiaque.",
+            failingMsg: "Continuez à réviser pour améliorer vos connaissances cardiaques !"
+        },
+        ar: {
+            title: "اختبار تشريح القلب",
+            nextBtn: "السؤال التالي",
+            correct: "إجابة صحيحة!",
+            incorrect: "إجابة خاطئة",
+            completed: "اكتمل الاختبار!",
+            scoreMsg: "درجتك هي:",
+            restartBtn: "إعادة الاختبار",
+            passingMsg: "تهانينا! لديك فهم قوي لتشريح عضلة القلب.",
+            failingMsg: "استمر في التدرب لتحسين معرفتك الطبية بالقلب!"
+        }
+    };
+
+    // Multilingual Question Database
+    const quizData = [
+        {
+            question: {
+                en: "What are the four chambers of the heart?",
+                fr: "Quelles sont les quatre cavités du cœur ?",
+                ar: "ما هي حجرات القلب الأربع؟"
+            },
+            options: {
+                en: ["Right/Left Atria and Right/Left Ventricles", "Aorta, Vena cava, and two ventricles", "Mitral, Tricuspid, Aortic, and Pulmonary", "Epicardium, Myocardium, and Endocardium"],
+                fr: ["Oreillettes droite/gauche et Ventricules droit/gauche", "Aorte, Veine cave et deux ventricules", "Valves mitrale, tricuspide, aortique et pulmonaire", "Épicarde, Myocarde et Endocarde"],
+                ar: ["الأذينان الأيمن/الأيسر والبطينان الأيمن/الأيسر", "الأبهر، الوريد الأجوف وبطينان", "الصمام التاجي، ثلاثي الشرفات، الأبهر والرئوي", "النخاب، عضلة القلب والشغاف"]
+            },
+            correct: 0,
+            explanation: {
+                en: "The heart is split into two upper receiving chambers (atria) and two lower pumping chambers (ventricles).",
+                fr: "Le cœur est divisé en deux cavités supérieures réceptrices (oreillettes) et deux cavités inférieures de pompage (ventricules).",
+                ar: "ينقسم القلب إلى حُجرتين علويتين لاستقبال الدم (الأذينين) وحُجرتين سفليتين لضخ الدم (البطينين)."
+            }
+        },
+        {
+            question: {
+                en: "Which side of the heart carries oxygenated blood?",
+                fr: "Quel côté du cœur transporte le sang oxygéné ?",
+                ar: "أي جانب من القلب يحمل الدم المؤكسج (الغني بالأكسجين)؟"
+            },
+            options: {
+                en: ["The Right Side", "The Left Side", "Both sides equally", "The Superior Vena Cava only"],
+                fr: ["Le côté droit", "Le côté gauche", "Les deux côtés", "La veine cave supérieure uniquement"],
+                ar: ["الجانب الأيمن", "الجانب الأيسر", "الجانبان بالتساوي", "الوريد الأجوف العلوي فقط"]
+            },
+            correct: 1,
+            explanation: {
+                en: "The left side of the heart receives oxygen-rich blood from the lungs and pumps it to the rest of the body.",
+                fr: "Le côté gauche reçoit le sang riche en oxygène des poumons et le propulse vers le reste du corps.",
+                ar: "يستقبل الجانب الأيسر من القلب الدم الغني بالأكسجين من الرئتين ويضخه إلى بقية أجزاء الجسم."
+            }
+        },
+        {
+            question: {
+                en: "Why is the left ventricle significantly thicker than the right ventricle?",
+                fr: "Pourquoi le ventricule gauche est-il plus épais que le ventricule droit ?",
+                ar: "لماذا يعد البطين الأيسر أكثر سمكاً من البطين الأيمن؟"
+            },
+            options: {
+                en: ["It holds more blood volume", "It pumps blood to the entire body under high pressure", "It is closer to the lungs", "It contains more pacemaker cells"],
+                fr: ["Parce qu'il contient plus de sang", "Parce qu'il pompe le sang vers tout le corps sous haute pression", "Parce qu'il est situé plus près des poumons", "Parce qu'il contient plus de cellules stimulatrices"],
+                ar: ["لأنه يستوعب حجماً أكبر من الدم", "لأنه يضخ الدم إلى كامل الجسم تحت ضغط مرتفع", "لأنه أقرب إلى الرئتين", "لأنه يحتوي على المزيد من الخلايا المنظمة لضربات القلب"]
+            },
+            correct: 1,
+            explanation: {
+                en: "The left ventricle must generate significant force to overcome systemic vascular resistance to deliver blood throughout the body.",
+                fr: "Le ventricule gauche doit fournir une force immense pour envoyer le sang dans la circulation systémique (tout le corps).",
+                ar: "يبذل البطين الأيسر جهداً أكبر لأنه يجب عليه التغلب على المقاومة الوعائية الجهازية لإيصال الدم إلى جميع أنحاء الجسم."
+            }
+        },
+        {
+            question: {
+                en: "What is the primary function of heart valves?",
+                fr: "Quelle est la fonction principale des valves cardiaques ?",
+                ar: "ما هي الوظيفة الأساسية لصمامات القلب؟"
+            },
+            options: {
+                en: ["To filter impurities from blood", "To accelerate heart rate", "To prevent backflow and ensure one-way circulation", "To generate electrical signals"],
+                fr: ["Filtrer les impuretés du sang", "Accélérer le rythme cardiaque", "Empêcher le reflux et assurer une circulation à sens unique", "Générer des signaux électriques"],
+                ar: ["تصفية الشوائب من الدم", "تسريع معدل ضربات القلب", "منع تدفق الدم العكسي وضمان دورة دموية في اتجاه واحد", "توليد الإشارات الكهربائية"]
+            },
+            correct: 2,
+            explanation: {
+                en: "Valves act as check valves, opening and closing to ensure blood flow progresses forward through the chambers.",
+                fr: "Les valves s'ouvrent et se ferment de façon coordonnée pour empêcher le sang de refluer pendant les contractions.",
+                ar: "تعمل الصمامات كحواجز تفتح وتغلق بالتنسيق لمنع تدفق الدم العكسي أثناء انقباضات القلب."
+            }
+        },
+        {
+            question: {
+                en: "Which layer of the heart wall is responsible for contraction?",
+                fr: "Quelle couche est responsable de la contraction du cœur ?",
+                ar: "أي طبقة من جدار القلب هي المسؤولة عن الانقباض وضخ الدم؟"
+            },
+            options: {
+                en: ["Endocardium", "Epicardium", "Myocardium", "Pericardium"],
+                fr: ["L'endocarde", "L'épicarde", "Le myocarde", "Le péricarde"],
+                ar: ["الشغاف (Endocardium)", "النخاب (Epicardium)", "عضلة القلب (Myocardium)", "التامور (Pericardium)"]
+            },
+            correct: 2,
+            explanation: {
+                en: "The myocardium is the thick muscular layer of the heart wall containing cardiac myocytes.",
+                fr: "Le myocarde est la couche musculaire épaisse de la paroi cardiaque qui se contracte pour pomper le sang.",
+                ar: "عضلة القلب (Myocardium) هي الطبقة العضلية السميكة في جدار القلب والتي تنقبض لضخ الدم."
+            }
+        }
+    ];
+
+    let currentLanguage = 'en';
+    let currentQuestion = 0;
+    let score = 0;
+    let selectedAnswerIndex = null; // Track selection state to survive language switches
+
+    const container = document.getElementById("quiz-container");
+    const questionText = document.getElementById("question-text");
+    const optionsContainer = document.getElementById("options");
+    const progressBar = document.getElementById("progress-bar");
+    const feedback = document.getElementById("feedback");
+    const nextButton = document.getElementById("next-button");
+    const quizTitle = document.getElementById("quiz-title");
+
+    // Dynamic Language Switch Handler
+    function changeLanguage(lang) {
+        currentLanguage = lang;
+        
+        // Update Active Button UI
+        document.querySelectorAll(".lang-btn").forEach(btn => {
+            btn.classList.toggle("active", btn.innerText.toLowerCase() === lang || (lang === 'ar' && btn.innerText === 'العربية'));
+        });
+
+        // Set Text Direction & Language attributes
+        if (lang === 'ar') {
+            container.setAttribute("dir", "rtl");
+            document.body.setAttribute("dir", "rtl");
+        } else {
+            container.setAttribute("dir", "ltr");
+            document.body.setAttribute("dir", "ltr");
+        }
+
+        // Apply UI translations
+        quizTitle.innerText = uiTranslations[currentLanguage].title;
+        nextButton.innerText = uiTranslations[currentLanguage].nextBtn;
+
+        // Rerender state without losing quiz progress
+        if (currentQuestion < quizData.length) {
+            renderQuestion();
+        } else {
+            showResults();
+        }
+    }
+
+    function renderQuestion() {
+        const data = quizData[currentQuestion];
+        questionText.innerText = `${currentQuestion + 1}. ${data.question[currentLanguage]}`;
+        optionsContainer.innerHTML = "";
+        
+        // Update progress bar
+        const progress = (currentQuestion / quizData.length) * 100;
+        progressBar.style.width = `${progress}%`;
+
+        data.options[currentLanguage].forEach((option, index) => {
+            const btn = document.createElement("button");
+            btn.classList.add("option-btn");
+            btn.innerText = option;
+            btn.onclick = () => selectOption(index);
+            optionsContainer.appendChild(btn);
+        });
+
+        // Restore selection state & classes if user toggles language *after* submitting an answer
+        if (selectedAnswerIndex !== null) {
+            restoreAnswerState();
+        } else {
+            feedback.style.display = "none";
+            nextButton.style.display = "none";
+        }
+    }
+
+    function selectOption(index) {
+        selectedAnswerIndex = index;
+        restoreAnswerState();
+    }
+
+    function restoreAnswerState() {
+        const buttons = document.querySelectorAll(".option-btn");
+        const correctIndex = quizData[currentQuestion].correct;
+        
+        buttons.forEach(btn => btn.disabled = true);
+
+        if (selectedAnswerIndex === correctIndex) {
+            buttons[selectedAnswerIndex].classList.add("correct");
+            if (!feedback.style.display || feedback.style.display === "none") {
+                score++; // Increment score only on initial true submit
+            }
+            showFeedback(true);
+        } else {
+            buttons[selectedAnswerIndex].classList.add("wrong");
+            buttons[correctIndex].classList.add("correct");
+            showFeedback(false);
+        }
+        
+        nextButton.style.display = "block";
+    }
+
+    function showFeedback(isCorrect) {
+        feedback.style.display = "block";
+        feedback.style.backgroundColor = isCorrect ? "#d4edda" : "#f8d7da";
+        feedback.style.color = isCorrect ? "#155724" : "#721c24";
+        
+        const label = isCorrect ? uiTranslations[currentLanguage].correct : uiTranslations[currentLanguage].incorrect;
+        feedback.innerHTML = `<strong>${label}</strong><br>${quizData[currentQuestion].explanation[currentLanguage]}`;
+    }
+
+    function nextQuestion() {
+        currentQuestion++;
+        selectedAnswerIndex = null; // Reset selection tracker
+        if (currentQuestion < quizData.length) {
+            renderQuestion();
+        } else {
+            showResults();
+        }
+    }
+
+    function showResults() {
+        progressBar.style.width = `100%`;
+        const content = document.getElementById("quiz-content");
+        const passing = score >= (quizData.length / 2);
+        const feedbackMsg = passing ? uiTranslations[currentLanguage].passingMsg : uiTranslations[currentLanguage].failingMsg;
+
+        content.innerHTML = `
+            <div class="result-screen">
+                <h2>${uiTranslations[currentLanguage].completed}</h2>
+                <p>${uiTranslations[currentLanguage].scoreMsg}</p>
+                <div class="score-circle">${score} / ${quizData.length}</div>
+                <p>${feedbackMsg}</p>
+                <button class="next-btn" style="display:block" onclick="location.reload()">${uiTranslations[currentLanguage].restartBtn}</button>
+            </div>
+        `;
+    }
+
+    // Initial Render
+    renderQuestion();
+</script>
+
+</body>
+</html>

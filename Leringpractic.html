@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0"/>
+    <title>Heart Learning | Professional Cardiac Intelligence</title>
+
+    <!-- Premium Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #E11D48;
+            --primary-glow: rgba(225, 29, 72, 0.4);
+            --secondary: #6366F1;
+            
+            /* Light Theme */
+            --bg-app: #F8FAFC;
+            --surface: rgba(255, 255, 255, 0.7);
+            --border-subtle: rgba(15, 23, 42, 0.08);
+            --text-main: #0F172A;
+            --text-muted: #64748B;
+            --shadow-lux: 0 20px 40px -10px rgba(0, 0, 0, 0.05);
+            --mesh-1: rgba(225, 29, 72, 0.08);
+            --mesh-2: rgba(99, 102, 241, 0.08);
+            
+            /* Responsive Constants */
+            --stage-padding: 80px 60px;
+            --card-padding: 40px;
+        }
+
+        [data-theme="dark"] {
+            --bg-app: #020617;
+            --surface: rgba(15, 23, 42, 0.6);
+            --border-subtle: rgba(255, 255, 255, 0.08);
+            --text-main: #F8FAFC;
+            --text-muted: #94A3B8;
+            --shadow-lux: 0 30px 60px -12px rgba(0, 0, 0, 0.5);
+            --mesh-1: rgba(225, 29, 72, 0.15);
+            --mesh-2: rgba(99, 102, 241, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: background-color 0.5s ease, color 0.3s ease, border-color 0.3s ease, transform 0.3s ease;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-app);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Background */
+        .ambient-mesh {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .mesh-blob {
+            position: absolute;
+            filter: blur(100px);
+            border-radius: 50%;
+            animation: rotateMesh 25s infinite alternate ease-in-out;
+        }
+
+        .blob-1 { width: 50vw; height: 50vw; top: -10%; right: -10%; background: var(--mesh-1); }
+        .blob-2 { width: 40vw; height: 40vw; bottom: -10%; left: -5%; background: var(--mesh-2); animation-delay: -5s; }
+
+        @keyframes rotateMesh {
+            from { transform: translate(0, 0) rotate(0deg); }
+            to { transform: translate(50px, 30px) rotate(10deg); }
+        }
+
+        /* Navigation */
+        .header {
+            position: fixed;
+            top: 0; left: 0; width: 100%;
+            padding: 20px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .brand {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-weight: 800;
+            font-size: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-main);
+            text-decoration: none;
+        }
+        .brand i { color: var(--primary); font-size: 1.5rem; }
+
+        .theme-toggle {
+            width: 44px; height: 44px;
+            border-radius: 12px;
+            background: var(--surface);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-main);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+            box-shadow: var(--shadow-lux);
+        }
+
+        /* Main Container */
+        .main-container {
+            width: 100%;
+            max-width: 1100px;
+            padding: 100px 20px 40px; /* Top padding for header */
+            z-index: 10;
+        }
+
+        .glass-stage {
+            background: var(--surface);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border: 1px solid var(--border-subtle);
+            border-radius: 40px;
+            padding: var(--stage-padding);
+            box-shadow: var(--shadow-lux);
+            text-align: center;
+        }
+
+        .hero-text h1 {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 800;
+            letter-spacing: -2px;
+            margin-bottom: 20px;
+            line-height: 1.1;
+        }
+
+        .hero-text h1 span {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-text p {
+            font-size: clamp(0.95rem, 2vw, 1.15rem);
+            color: var(--text-muted);
+            max-width: 600px;
+            margin: 0 auto 50px;
+            line-height: 1.6;
+        }
+
+        /* Action Grid */
+        .action-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 20px;
+        }
+
+        .action-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-subtle);
+            border-radius: 28px;
+            padding: var(--card-padding);
+            text-decoration: none;
+            display: flex;
+            align-items: flex-start;
+            text-align: left;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .action-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--primary);
+            background: var(--surface);
+            box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.1);
+        }
+
+        [data-theme="dark"] .action-card:hover {
+            box-shadow: 0 20px 40px -10px rgba(225, 29, 72, 0.2);
+        }
+
+        .icon-sq {
+            width: 60px; height: 60px;
+            background: var(--text-main);
+            color: var(--bg-app);
+            border-radius: 16px;
+            display: flex;
+            align-items: center; justify-content: center;
+            font-size: 1.5rem;
+            margin-right: 24px;
+            flex-shrink: 0;
+        }
+
+        .action-card:hover .icon-sq {
+            background: var(--primary);
+            color: white;
+            transform: scale(1.1) rotate(-5deg);
+        }
+
+        .card-content h3 {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 1.35rem;
+            color: var(--text-main);
+            margin-bottom: 8px;
+        }
+
+        .card-content p {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        .btn-arrow {
+            position: absolute;
+            bottom: 30px; right: 30px;
+            font-size: 1.2rem;
+            color: var(--primary);
+            opacity: 0;
+            transform: translateX(-10px);
+            transition: 0.3s ease;
+        }
+
+        .action-card:hover .btn-arrow {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        /* --- RESPONSIVE BREAKPOINTS --- */
+
+        /* Tablets */
+        @media (max-width: 992px) {
+            :root { --stage-padding: 60px 40px; }
+            .action-grid { grid-template-columns: 1fr; }
+        }
+
+        /* Mobile Large */
+        @media (max-width: 640px) {
+            :root { 
+                --stage-padding: 40px 20px; 
+                --card-padding: 24px;
+            }
+            .header { padding: 15px 20px; }
+            .glass-stage { border-radius: 30px; }
+            
+            .action-card {
+                flex-direction: column; /* Vertical Layout */
+                gap: 16px;
+                align-items: flex-start;
+            }
+            
+            .icon-sq {
+                width: 50px; height: 50px;
+                margin-right: 0;
+                font-size: 1.25rem;
+            }
+
+            .btn-arrow {
+                position: relative;
+                bottom: 0; right: 0;
+                margin-top: 15px;
+                opacity: 1; /* Always visible on touch */
+                transform: none;
+                display: flex;
+                align-items: center;
+                gap: 5px;
+                font-size: 0.9rem;
+                font-weight: 600;
+            }
+            .btn-arrow::before { content: 'Explore Now'; font-size: 0.8rem; }
+        }
+
+        /* Small Smartphones */
+        @media (max-width: 380px) {
+            .hero-text h1 { font-size: 1.75rem; letter-spacing: -1px; }
+            .glass-stage { padding: 30px 15px; border-radius: 20px; }
+            .card-content h3 { font-size: 1.15rem; }
+            .brand span { display: none; } /* Show only icon on tiny screens */
+        }
+    </style>
+</head>
+<body>
+
+    <div class="ambient-mesh">
+        <div class="mesh-blob blob-1"></div>
+        <div class="mesh-blob blob-2"></div>
+    </div>
+
+    <header class="header">
+     
+        <button class="theme-toggle" id="theme-btn" aria-label="Toggle Theme">
+            <i class="ri-sun-line" id="theme-icon"></i>
+        </button>
+    </header>
+
+    <main class="main-container">
+        <div class="glass-stage">
+            <div class="hero-text">
+                <h1>Heart <span>Study </span>Hub</h1>
+                <p>
+                    Precision-engineered platform for cardiovascular analysis and medical learning. 
+                    Empowering practitioners with intelligent tools.
+                </p>
+            </div>
+
+      <div class="action-grid">
+
+    <!-- Intelligence Hub -->
+    <a href="Intlligncelab.html" class="action-card">
+        <div class="icon-sq">
+            <i class="ri-command-fill"></i>
+        </div>
+
+        <div class="card-content">
+            <h3>Intelligence Hub</h3>
+            <p>Access advanced ECG synthesis, clinical theory, and interactive cardiac modules.</p>
+        </div>
+
+        <i class="ri-arrow-right-line btn-arrow"></i>
+    </a>
+
+    <!-- Diagnostic Lab -->
+    <a href="DiagnosticLab.html" class="action-card">
+        <div class="icon-sq">
+            <i class="ri-pulse-fill"></i>
+        </div>
+
+        <div class="card-content">
+            <h3>Diagnostic Lab</h3>
+            <p>Analyze complex clinical cases and generate multi-factor cardiovascular risk assessments.</p>
+        </div>
+
+        <i class="ri-arrow-right-line btn-arrow"></i>
+    </a>
+
+</div>
+        </div>
+    </main>
+
+    <script>
+        const themeBtn = document.getElementById('theme-btn');
+        const themeIcon = document.getElementById('theme-icon');
+        const html = document.documentElement;
+
+        const applyTheme = (theme) => {
+            html.setAttribute('data-theme', theme);
+            localStorage.setItem('premium-theme', theme);
+            themeIcon.className = theme === 'dark' ? 'ri-sun-fill' : 'ri-moon-fill';
+        };
+
+        const storedTheme = localStorage.getItem('premium-theme') || 'light';
+        applyTheme(storedTheme);
+
+        themeBtn.addEventListener('click', () => {
+            const target = html.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+            document.body.style.opacity = '0.7';
+            setTimeout(() => {
+                applyTheme(target);
+                document.body.style.opacity = '1';
+            }, 100);
+        });
+
+        // Disabled mouse-parallax on mobile for performance
+        if (window.innerWidth > 768) {
+            document.querySelectorAll('.action-card').forEach(card => {
+                card.addEventListener('mousemove', (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const x = (e.clientX - rect.left) / rect.width - 0.5;
+                    const y = (e.clientY - rect.top) / rect.height - 0.5;
+                    card.style.transform = `perspective(1000px) rotateX(${y * 4}deg) rotateY(${-x * 4}deg) translateY(-8px)`;
+                });
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = `perspective(1000px) rotateX(0) rotateY(0) translateY(0)`;
+                });
+            });
+        }
+    </script>
+</body>
+</html>

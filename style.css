@@ -103,6 +103,7 @@ html {
 }
 
 body {
+        font-size: clamp(14px, 1vw, 18px);
     font-family: 'Poppins', 'Segoe UI', system-ui, -apple-system, sans-serif;
     background-color: var(--bg-color);
     color: var(--text-color);
@@ -198,23 +199,6 @@ a {
     color: #fff;
 }
 
-/* Mobile menu item enhancements */
-@media (max-width: 768px) {
-    .nav__list li a {
-        font-size: 1.1rem;
-        padding: 1rem 1.5rem;
-        min-height: 48px;
-        justify-content: flex-start;
-    }
-    
-    .nav__list li a:hover,
-    .nav__list li a:focus-visible {
-        background: rgba(var(--primary-color), 0.1);
-        color: var(--primary-color);
-        transform: translateX(8px);
-    }
-}
-
 .nav__actions {
     display: flex;
     align-items: center;
@@ -239,15 +223,6 @@ a {
     cursor: pointer;
     z-index: 1001;
     position: relative;
-    transition: all 0.3s ease;
-}
-
-.nav__burger:hover {
-    color: var(--primary-color);
-}
-
-.nav__burger.active i {
-    color: var(--primary-color);
 }
 
 /* ===== HOME SECTION ===== */
@@ -272,11 +247,11 @@ a {
 
 .home__data {
     flex: 1;
-    min-width: clamp(250px, 90vw, 350px);
+    min-width: 300px;
 }
 
 .home__data h1 {
-    font-size: clamp(1.8rem, 5vw, 2.2rem);
+    font-size: 2.2rem;
     font-weight: 700;
     color: var(--primary-color);
     margin-bottom: 1rem;
@@ -299,14 +274,14 @@ a {
     perspective: 1200px;
     position: relative;
     z-index: 5;
-    min-width: clamp(250px, 90vw, 350px);
+    min-width: 300px;
 }
 
 /* ===== ECG WAVE ANIMATION ===== */
 .ecg-container {
     width: 100%;
-    max-width: clamp(300px, 90vw, 600px);
-    height: clamp(180px, 35vh, 250px);
+    max-width: 600px;
+    height: 250px;
     position: relative;
     background: transparent;
     border-radius: 12px;
@@ -562,30 +537,20 @@ a {
 
 .calc-btn {
     width: 100%;
-    padding: clamp(0.875rem, 4vw, 1rem) clamp(1.5rem, 8vw, 2rem);
-    min-height: 48px;
+    padding: 1rem 2rem;
     background: linear-gradient(135deg, var(--primary-green), var(--primary-green-dark));
     border: none;
     border-radius: 10px;
     color: white;
-    font-size: clamp(0.95rem, 4vw, 1rem);
+    font-size: 1rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }
 
-.calc-btn:hover, .calc-btn:active {
-    transform: translateY(-2px) scale(0.98);
+.calc-btn:hover {
+    transform: translateY(-2px);
     box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
-}
-
-@media (hover: none) {
-  .calc-btn:hover {
-    transform: none;
-  }
 }
 
 .calc-btn.full-width {
@@ -870,11 +835,11 @@ a {
 /* Compass Visualization */
 .axis-compass {
     display: flex;
-    flex-direction: column: center;
+    flex-direction: column;
 }
 
-;
-    align-items.compass-container {
+.compass-container {
+
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -882,8 +847,8 @@ a {
 }
 
 .compass-svg {
-    width: clamp(220px, 80vw, 280px);
-    height: clamp(220px, 80vw, 280px);
+    width: 280px;
+    height: 280px;
 }
 
 .compass-bg {
@@ -2253,11 +2218,12 @@ a {
     border: none;
     border-radius: 10px;
     color: white;
-    font-size;
+    font-size: 14px;
     font-weight: 600;
-: 14px    cursor: pointer;
+    cursor: pointer;
     transition: all 0.3s var(--transition-smooth);
 }
+
 
 .newsletter-btn:hover {
     transform: translateY(-2px);
@@ -2311,21 +2277,8 @@ a {
 
 /* Tablet */
 @media (max-width: 1024px) {
-    .container {
-        padding: 0 1.5rem;
-    }
-    
     .home__container {
         gap: 2rem;
-        flex-direction: column;
-    }
-    
-    .home__data h1 {
-        text-align: center;
-    }
-    
-    .section {
-        padding: 4rem 0;
     }
     
     .footer-content {
@@ -2340,22 +2293,734 @@ a {
     }
     
     .contact-container {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr 1fr;
         gap: 40px;
-        padding: 40px 1.5rem;
+        padding: 50px 30px;
     }
     
     .map-info-cards {
         grid-template-columns: repeat(2, 1fr);
-        gap: 1rem;
     }
     
     .patient-info-grid {
         grid-template-columns: repeat(2, 1fr);
     }
+}
 
-    .features__grid,
+/* Mobile */
+@media (max-width: 768px) {
+    /* Show burger menu icon only on mobile */
+    .nav__burger {
+        display: block;
+    }
+
+    /* Mobile drawer menu */
+    .nav__list {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: 60%;
+        height: 100%;
+        background-color: var(--card-bg);
+        flex-direction: column;
+        gap: 2rem;
+        padding: 5rem 1.5rem;
+        transition: right 0.3s ease, background-color var(--transition);
+        box-shadow: -10px 0 30px rgba(0, 0, 0, 0.35);
+        z-index: 1000;
+    }
+
+    .nav__list.active {
+        right: 0;
+    }
+
+    body.menu-open {
+        overflow: hidden;
+    }
+}
+
+/* Extra small mobile (stack layouts, keep same styling) */
+@media (max-width: 480px) {
+    .container {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    .nav {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    .nav__list {
+        width: 80%;
+        padding: 4.5rem 1.25rem;
+    }
+
+    .home__container {
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .home__data,
+    .home__img {
+        min-width: 0;
+        width: 100%;
+    }
+
+    .home__data h1 {
+        font-size: 1.8rem;
+    }
+
+    .ecg-container {
+        height: 220px;
+        max-width: 100%;
+    }
+
+    .axis-content {
+        grid-template-columns: 1fr;
+        gap: 1.25rem;
+    }
+
+    .compass-svg {
+        width: min(280px, 80vw);
+        height: min(280px, 80vw);
+    }
+
+    .contact-container {
+        grid-template-columns: 1fr;
+        gap: 32px;
+        padding: 40px 16px;
+    }
+
+    .footer-content {
+        grid-template-columns: 1fr;
+        gap: 32px;
+        padding: 60px 20px 30px;
+    }
+
+    .patient-info-grid {
+        grid-template-columns: 1fr;
+        gap: 0.9rem;
+    }
+
+    .map-info-cards {
+        grid-template-columns: 1fr;
+    }
+
     .measurement-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Smallest screens */
+@media (max-width: 360px) {
+    .home {
+        padding: 4rem 1rem;
+    }
+
+    .section__title {
+        font-size: 1.6rem;
+    }
+
+    .ecg-container {
+        height: 200px;
+    }
+
+    .compass-svg {
+        width: min(240px, 88vw);
+        height: min(240px, 88vw);
+    }
+
+    .result-number {
+        font-size: 2.4rem;
+    }
+}
+
+/* ===== STUDY SECTION (ULTRA PREMIUM) ===== */
+.study-section {
+    padding: 7rem 0;
+    background: radial-gradient(circle at top, rgba(16,185,129,0.12), transparent 55%),
+                radial-gradient(circle at bottom, rgba(0,255,136,0.05), transparent 60%),
+                var(--bg-primary);
+    position: relative;
+    overflow: hidden;
+}
+
+/* FLOATING BACKLIGHT EFFECT */
+.study-section::before {
+    content: "";
+    position: absolute;
+    width: 500px;
+    height: 500px;
+    background: var(--glow-color);
+    filter: blur(120px);
+    top: -200px;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0.25;
+}
+
+/* TITLE (FUTURISTIC) */
+.study-section .section__title {
+    font-size: 2.8rem;
+    font-weight: 800;
+    text-align: center;
+    color: var(--primary-color);
+    letter-spacing: 2px;
+    text-shadow: 0 0 25px var(--glow-color);
+}
+
+.study-section .study__subtitle {
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 1.05rem;
+    margin-top: 0.5rem;
+    margin-bottom: 4rem;
+}
+
+/* CONTAINER */
+.study-section .study__buttons {
+    display: flex;
+    justify-content: center;
+    gap: 3rem;
+    flex-wrap: wrap;
+}
+
+/* ===== ULTRA CARD ===== */
+.study-section .study__btn {
+    width: 380px;
+    padding: 2rem;
+    border-radius: 24px;
+
+    display: flex;
+    align-items: center;
+    gap: 1.3rem;
+
+    background: linear-gradient(
+        145deg,
+        rgba(255,255,255,0.06),
+        rgba(255,255,255,0.02)
+    );
+
+    backdrop-filter: blur(20px);
+
+    border: 1px solid rgba(16,185,129,0.2);
+
+    color: var(--text-primary);
+
+    position: relative;
+    overflow: hidden;
+
+    cursor: pointer;
+    transition: all 0.5s var(--transition-smooth);
+
+    box-shadow:
+        0 15px 40px rgba(0,0,0,0.6),
+        inset 0 0 30px rgba(16,185,129,0.05);
+}
+
+/* NEON BORDER ANIMATION */
+.study-section .study__btn::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 24px;
+    padding: 1px;
+
+    background: linear-gradient(
+        120deg,
+        transparent,
+        var(--primary-color),
+        transparent
+    );
+
+    -webkit-mask: linear-gradient(#000 0 0) content-box,
+                  linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+
+    opacity: 0.4;
+}
+
+/* HOVER = 3D FLOAT */
+.study-section .study__btn:hover {
+    transform: translateY(-12px) scale(1.03) rotateX(3deg);
+    box-shadow:
+        0 25px 60px rgba(0,0,0,0.7),
+        0 0 40px var(--glow-color);
+}
+
+/* ICON ULTRA GLOW */
+.study-section .btn-icon {
+    width: 60px;
+    height: 60px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 16px;
+
+    font-size: 2.2rem;
+
+    background: rgba(16,185,129,0.08);
+    color: var(--primary-color);
+
+    box-shadow:
+        0 0 25px rgba(16,185,129,0.25),
+        inset 0 0 10px rgba(16,185,129,0.2);
+}
+
+/* PATIENT MODE (RED ALERT NEON) */
+.study-section .practice-btn .btn-icon {
+    background: rgba(255,59,59,0.08);
+    color: var(--error);
+    box-shadow:
+        0 0 25px rgba(255,59,59,0.25),
+        inset 0 0 10px rgba(255,59,59,0.2);
+}
+
+/* TEXT */
+.study-section .btn-content h3 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 0.3rem;
+    letter-spacing: 0.5px;
+}
+
+.study-section .btn-content p {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+/* ARROW ANIMATION */
+.study-section .btn-arrow {
+    margin-left: auto;
+    font-size: 1.4rem;
+    opacity: 0.5;
+    transition: all 0.4s ease;
+}
+
+.study-section .study__btn:hover .btn-arrow {
+    transform: translateX(10px);
+    opacity: 1;
+}
+
+/* ACTIVE LIGHT SWEEP EFFECT */
+.study-section .study__btn::after {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -60%;
+    width: 40%;
+    height: 200%;
+    background: linear-gradient(
+        to right,
+        transparent,
+        rgba(255,255,255,0.15),
+        transparent
+    );
+    transform: rotate(25deg);
+    transition: all 0.8s ease;
+}
+
+.study-section .study__btn:hover::after {
+    left: 120%;
+}
+
+
+/* =========================
+   FINAL RESPONSIVE FIX PATCH
+   (ADD AT END ONLY)
+   ========================= */
+
+/* 1. Prevent horizontal overflow (ROOT FIX) */
+html, body {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+/* 2. Fix flex/grid breaking layout */
+* {
+    min-width: 0;
+}
+
+/* =========================
+   HOME RESPONSIVE FIX
+   ========================= */
+@media (max-width: 992px) {
+    .home__container {
+        flex-wrap: wrap;
+        gap: 2rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .home {
+        padding: 3rem 1rem;
+    }
+
+    .home__container {
+        flex-direction: column;
+        text-align: center;
+        align-items: center;
+    }
+
+    .home__data,
+    .home__img {
+        width: 100%;
+        min-width: unset;
+    }
+
+    .home__data h1 {
+        font-size: 1.8rem;
+    }
+
+    .home__data p {
+        font-size: 0.95rem;
+    }
+
+    .ecg-container {
+        width: 100%;
+        max-width: 100%;
+        height: 200px;
+    }
+}
+
+/* =========================
+   STUDY SECTION FIX
+   ========================= */
+@media (max-width: 992px) {
+    .study-section .study__buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .study-section .study__btn {
+        width: 100%;
+        max-width: 420px;
+    }
+}
+
+@media (max-width: 768px) {
+    .study-section {
+        padding: 4rem 1rem;
+    }
+
+    .study-section .study__btn {
+        width: 100%;
+        flex-direction: column;
+        text-align: center;
+        padding: 1.5rem;
+    }
+
+    .study-section .btn-arrow {
+        margin-left: 0;
+        margin-top: 0.5rem;
+    }
+
+    .study-section .btn-icon {
+        width: 50px;
+        height: 50px;
+        font-size: 1.7rem;
+    }
+
+    .study-section .btn-content h3 {
+        font-size: 1.1rem;
+    }
+
+    .study-section .btn-content p {
+        font-size: 0.85rem;
+    }
+}
+
+/* =========================
+   CONTACT + MAP FIX
+   ========================= */
+@media (max-width: 1024px) {
+    .contact-container {
+        grid-template-columns: 1fr;
+    }
+
+    .map-info-cards {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .map-info-cards {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* =========================
+   ECG + MEASUREMENT FIX
+   ========================= */
+@media (max-width: 768px) {
+    .measurement-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .axis-content {
+        grid-template-columns: 1fr;
+    }
+
+    .compass-svg {
+        width: 100%;
+        height: auto;
+    }
+}
+
+/* =========================
+   FOOTER FIX
+   ========================= */
+@media (max-width: 768px) {
+    .footer-content {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+        padding: 50px 20px;
+    }
+}
+
+/* =========================
+   GLOBAL MOBILE SAFETY
+   ========================= */
+@media (max-width: 480px) {
+    .container {
+        padding: 0 1rem;
+    }
+
+    .section {
+        padding: 3rem 0;
+    }
+
+    .section__title {
+        font-size: 1.6rem;
+    }
+}
+/* =========================
+   RESPONSIVE FIX (FINAL PATCH)
+   ========================= */
+
+/* منع أي عنصر يخرج خارج الشاشة */
+* {
+    box-sizing: border-box;
+}
+
+img, svg {
+    max-width: 100%;
+    height: auto;
+}
+
+/* =========================
+   GLOBAL MOBILE FIX
+   ========================= */
+@media (max-width: 1024px) {
+
+    .home__container {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .home__data {
+        width: 100%;
+    }
+
+    .home__img {
+        width: 100%;
+        margin-top: 2rem;
+    }
+
+    /* Study section */
+    .study__buttons {
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .study__btn {
+        width: 100%;
+        flex-direction: column;
+        text-align: center;
+        padding: 1.5rem;
+    }
+
+    .btn-content p {
+        font-size: 0.9rem;
+    }
+
+    /* calculators */
+    .calculator-wrapper {
+        width: 100%;
+        overflow-x: hidden;
+    }
+
+    .calculator-card {
+        width: 100%;
+    }
+
+    /* ECG axis */
+    .axis-content {
+        flex-direction: column;
+    }
+
+    .axis-compass {
+        width: 100%;
+        margin-top: 2rem;
+    }
+}
+
+/* =========================
+   TABLET FIX
+   ========================= */
+@media (max-width: 768px) {
+
+    h1 {
+        font-size: 1.6rem;
+    }
+
+    .section__title {
+        font-size: 1.4rem;
+        text-align: center;
+    }
+
+    /* Home text */
+    .home__data p {
+        font-size: 0.95rem;
+        line-height: 1.6;
+    }
+
+    /* Study buttons */
+    .study__btn {
+        padding: 1.2rem;
+        gap: 1rem;
+    }
+
+    .btn-content h3 {
+        font-size: 1.1rem;
+    }
+
+    /* report form */
+    .form-row {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .form-group {
+        width: 100%;
+    }
+
+    /* ECG grid */
+    .measurement-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* =========================
+   SMALL PHONE FIX
+   ========================= */
+@media (max-width: 480px) {
+
+    body {
+        overflow-x: hidden;
+    }
+
+    .container {
+        padding: 0 1rem;
+    }
+
+    /* Home section */
+    .home__data h1 {
+        font-size: 1.3rem;
+    }
+
+    .home__data p {
+        font-size: 0.85rem;
+    }
+
+    /* Study buttons fix (important for your problem) */
+    .study__btn {
+        padding: 1rem;
+        border-radius: 15px;
+    }
+
+    .btn-icon {
+        font-size: 1.5rem;
+    }
+
+    .btn-content p {
+        font-size: 0.8rem;
+    }
+
+    /* ECG SVG shrink */
+    .ecg-container svg {
+        height: 180px;
+    }
+
+    /* Report */
+    .medical-report {
+        font-size: 0.85rem;
+    }
+}
+
+/* =========================
+   FIX OVERFLOW PROBLEM (IMPORTANT)
+   ========================= */
+section, div {
+    max-width: 100%;
+}
+
+/* prevent huge elements after home */
+.study-section,
+.hr-calculator,
+.ecg-measurement,
+.axis-calculator,
+.report-generator {
+    overflow-x: hidden;
+}
+
+/* =========================
+   FLEX WRAP SAFETY
+   ========================= */
+.study__buttons,
+.calculator-wrapper,
+.axis-content,
+.report-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+/* =========================
+   FORCE LARGE ELEMENTS TO SHRINK
+   ========================= */
+.study__btn,
+.calculator-card,
+.patient-form-card,
+.axis-card {
+    min-width: 0;
+}
+/* ===============================
+   EXTRA RESPONSIVE ENHANCEMENTS
+   (ADD ONLY – NO DESIGN CHANGES)
+================================= */
+
+/* Tablets + small laptops */
+@media (max-width: 992px) {
+
+    .study-section .study__btn {
+        width: 320px;
+        padding: 1.6rem;
+    }
+
+    .home__data h1 {
+        font-size: 2rem;
+    }
+
+    .ecg-container {
+        max-width: 100%;
+        height: 230px;
+    }
+
+    .contact-container {
         grid-template-columns: 1fr;
     }
 
@@ -2364,70 +3029,568 @@ a {
     }
 }
 
-/* Mobile */
-@media (max-width: 768px) {
-    /* Hide desktop nav list, show burger */
-    .nav__list:not(.active) {
-        display: none;
+/* Large phones */
+@media (max-width: 600px) {
+
+    .section {
+        padding: 3.5rem 0;
     }
-    
-    .nav__burger {
-        display: block;
+
+    .home {
+        padding: 4rem 1rem;
     }
-    
-    .nav__list {
-        position: fixed;
-        top: 0;
-        right: -100%;
-        width: 75%;
-        max-width: 320px;
-        height: 100vh;
-        background-color: var(--card-bg);
+
+    .home__data h1 {
+        font-size: 1.7rem;
+    }
+
+    .home__data p {
+        font-size: 0.95rem;
+    }
+
+    .study-section .section__title {
+        font-size: 2rem;
+    }
+
+    .study-section .study__btn {
+        width: 100%;
+        flex-direction: row;
+    }
+
+    .btn-icon {
+        width: 50px;
+        height: 50px;
+        font-size: 1.8rem;
+    }
+
+    .result-number {
+        font-size: 2.2rem;
+    }
+
+    .nav__logo {
+        font-size: 1.1rem;
+    }
+}
+
+/* Small phones */
+@media (max-width: 420px) {
+
+    .container {
+        padding: 0 1rem;
+    }
+
+    .home__data h1 {
+        font-size: 1.5rem;
+    }
+
+    .study-section .study__btn {
+        padding: 1.2rem;
+    }
+
+    .study-section .btn-content h3 {
+        font-size: 1.1rem;
+    }
+
+    .study-section .btn-content p {
+        font-size: 0.8rem;
+    }
+
+    .ecg-container {
+        height: 200px;
+    }
+
+    .result-number {
+        font-size: 2rem;
+    }
+}
+/* =========================
+   RESPONSIVE BASE FIX (IMPORTANT)
+========================= */
+
+/* يجعل كل العناصر تتصرف بمرونة */
+html {
+    font-size: clamp(14px, 1.2vw, 18px);
+}
+
+/* منع أي عنصر من الخروج خارج الشاشة */
+* {
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+/* الصور والـ SVG تتكيف تلقائياً */
+img, svg {
+    max-width: 100%;
+    height: auto;
+}
+
+/* الحاويات المرنة */
+.container {
+    width: min(1200px, 100%);
+    padding-inline: clamp(1rem, 4vw, 2rem);
+}
+
+/* نصوص مرنة بدل الأحجام الثابتة */
+h1 { font-size: clamp(1.5rem, 3vw, 2.5rem); }
+h2 { font-size: clamp(1.3rem, 2.5vw, 2rem); }
+p  { font-size: clamp(0.9rem, 1.5vw, 1rem); }
+
+/* منع أي سكشن من التمدد الزائد */
+section {
+    overflow-x: hidden;
+}
+
+
+
+
+@media (min-width: 1024px) {
+
+    /* Heart Rate Calculator container */
+    .calculator-wrapper {
+        max-width: 1000px;
+    }
+
+    /* ECG Measurement Module container */
+    .measurement-card {
+        max-width: 1000px;
+    }
+
+    /* Ensure inner content expands correctly */
+    .calculator-card {
+        width: 100%;
+    }
+}
+
+
+/* =========================================================
+   AXIS CALCULATOR PROPORTIONAL SCALING (DESKTOP)
+   Directly overrides fixed 280px constraints to fill 1000px card
+========================================================= */
+@media (min-width: 1024px) {
+    /* 1. Expand the grid layout and center content vertically */
+    .axis-content {
+        grid-template-columns: 1fr 1fr;
+        gap: 4rem;
+        align-items: center; /* Prevents empty space at the bottom of the card */
+    }
+
+    /* 2. Force the Compass SVG to scale up from 280px to 420px */
+    .compass-svg {
+        width: 420px !important; 
+        height: 420px !important;
+        max-width: none !important; /* Removes any hidden scaling limits */
+    }
+
+    /* 3. Remove the padding restriction on the left column to allow wider inputs */
+    .axis-inputs {
+        padding-right: 0 !important;
+    }
+
+    /* 4. Increase visual weight of the Axis result to match larger diagram */
+    .axis-result {
+        margin-top: 2.5rem;
+        padding: 2rem;
+    }
+
+    .axis-value {
+        font-size: 2.2rem !important;
+        margin-bottom: 0.5rem;
+    }
+
+    /* 5. Scale up the legend markers for better legibility */
+    .compass-legend {
+        gap: 1rem 2rem;
+        margin-top: 1.5rem;
+    }
+
+    .legend-item {
+        font-size: 0.85rem;
+    }
+
+    .legend-color {
+        width: 16px;
+        height: 16px;
+    }
+}
+/* =========================================================
+   AXIS CALCULATOR COMPOSITION REBALANCE (DESKTOP)
+   Swaps columns and scales diagram to fill card width
+========================================================= */
+@media (min-width: 1024px) {
+    /* 1. Swap visual order and optimize column proportions */
+    .axis-content {
+        display: grid;
+        /* Compass column (left) is slightly wider than Inputs column (right) */
+        grid-template-columns: 1.2fr 1fr; 
+        grid-template-areas: "compass inputs";
+        gap: 5rem;
+        align-items: center;
+    }
+
+    /* 2. Assign elements to the new grid areas */
+    .axis-compass {
+        grid-area: compass;
+        display: flex;
         flex-direction: column;
-        gap: 0;
-        padding: 1rem 0;
-        transition: right 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        z-index: 1000;
-        box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
-        backdrop-filter: blur(10px);
-        overflow-y: auto;
-        border-left: 1px solid var(--border-card);
+        align-items: center;
+        justify-content: center;
     }
-    
-    .nav__list.active {
-        right: 0;
+
+    .axis-inputs {
+        grid-area: inputs;
+        padding-right: 0 !important;
     }
+
+    /* 3. Scale SVG to the maximum balanced size for the 1000px container */
+    .compass-svg {
+        width: 450px !important;
+        height: 450px !important;
+        filter: drop-shadow(0 0 20px rgba(0, 255, 136, 0.05));
+    }
+
+    /* 4. Fine-tune Input spacing to match the new right-side position */
+    .axis-inputs h3 {
+        font-size: 1.6rem;
+        margin-bottom: 1rem;
+    }
+
+    .axis-description {
+        max-width: 100%; /* Allows text to flow better in the narrower column */
+        font-size: 0.95rem;
+    }
+
+    .lead-selector {
+        margin-top: 1.5rem;
+    }
+
     
-    /* Body scroll lock */
-    body.menu-open {
+}
+
+
+
+/* Section Container */
+.ecg-feature-section {
+    width: 100%;
+    padding: 80px 20px; /* Provides vertical separation */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* Optional: background: rgba(255, 255, 255, 0.02); to subtly set it apart */
+}
+
+.ecg-section-content {
+    max-width: 800px; /* Keeps the section focused */
+    width: 100%;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 40px; /* Space between title and your button */
+}
+
+/* Typography for the Title & Subtitle */
+.ecg-section-header {
+    margin-bottom: 10px;
+}
+
+.ecg-section-title {
+    font-size: 1.8rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+    color: #ffffff; /* Adjust based on your theme */
+    text-transform: uppercase;
+}
+
+.ecg-section-subtitle {
+    font-size: 1rem;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.6); /* Muted professional look */
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .ecg-feature-section {
+        padding: 60px 15px;
+    }
+    .ecg-section-title {
+        font-size: 1.5rem;
+    }
+}
+/* ===== CALCULATOR SECTION LAYOUT ===== */
+.calculator.section {
+    padding: clamp(3rem, 8vw, 6rem) 0;
+    overflow: hidden;
+}
+
+.center-title {
+    text-align: center;
+    margin-bottom: clamp(2rem, 5vw, 3.5rem);
+    font-size: clamp(1.75rem, 4vw, 2.5rem); /* Fluid heading size */
+    font-weight: 700;
+}
+
+/* ===== CALCULATOR WRAPPER (The actual tool area) ===== */
+.calculator-wrapper {
+    max-width: 800px;
+    margin: 0 auto;
+    width: 100%;
+    padding: 0 1rem; /* Prevents edge-touching on mobile */
+}
+
+.calculator-card {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    padding: clamp(1.5rem, 5vw, 2.5rem); /* Adaptive padding */
+    box-shadow: 0 10px 30px var(--shadow-light);
+    border: 1px solid rgba(16, 185, 129, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* ===== FEATURES GRID (Optimization) ===== */
+.features__grid {
+    display: grid;
+    /* Uses minmax to ensure cards never get too small or too wide */
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.5rem;
+    margin-top: 3rem;
+    width: 100%;
+}
+
+/* Specific styling for 4 items to look balanced on large screens */
+@media (min-width: 1024px) {
+    .features__grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 2rem;
+    }
+}
+
+/* ===== FEATURE CARDS ===== */
+.feature__card {
+    background: var(--card-bg);
+    padding: 2rem 1.5rem;
+    border-radius: var(--radius);
+    text-align: center;
+    border: 1px solid rgba(16, 185, 129, 0.05);
+    box-shadow: 0 4px 20px var(--shadow-light);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.feature__card i {
+    font-size: 2.5rem;
+    color: #10b981; /* Brand Green */
+    margin-bottom: 1.25rem;
+    transition: transform 0.3s ease;
+}
+
+.feature__card h3 {
+    font-size: 1.25rem;
+    margin-bottom: 0.75rem;
+    color: var(--title-color);
+}
+
+.feature__card p {
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: var(--text-color);
+    margin: 0;
+}
+
+/* Hover Effects (Preserved & Enhanced) */
+.feature__card:hover {
+    transform: translateY(-10px);
+    border-color: rgba(16, 185, 129, 0.3);
+    box-shadow: 0 12px 40px var(--shadow-light);
+}
+
+.feature__card:hover i {
+    transform: scale(1.1);
+}
+
+/* ===== RESPONSIVE BREAKPOINTS ===== */
+
+/* Tablet Optimization */
+@media (max-width: 992px) {
+    .features__grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+    }
+}
+
+/* Mobile Optimization */
+@media (max-width: 576px) {
+    .features__grid {
+        grid-template-columns: 1fr; /* Stacked */
+        gap: 1.25rem;
+    }
+
+    .calculator-card {
+        padding: 1.5rem;
+        border-radius: calc(var(--radius) * 0.8);
+    }
+
+    .feature__card {
+        padding: 1.75rem 1rem;
+    }
+
+    .feature__card i {
+        font-size: 2rem;
+    }
+}
+
+/* Large Desktop - Prevents the grid from becoming excessively wide */
+@media (min-width: 1400px) {
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+}
+
+
+
+/* =========================================================
+   SCALED HERO TITLE ADJUSTMENT
+   ========================================================= */
+
+.cardionova-title {
+    /* Increased scale: Min 2.2rem (Mobile), 10vw scaling, Max 4.8rem (Large Desktop) */
+    font-size: clamp(2.2rem, 10vw, 4.8rem);
+    
+    /* Slightly tighter line-height to maintain professional density at larger scales */
+    line-height: 1.05;
+    
+    /* Added a touch more margin to prevent crowding the hero area */
+    margin-bottom: 0.5rem;
+}
+
+/* Ensure the heartbeat dot scales proportionally with the larger text */
+.cardionova-title::after {
+    width: clamp(8px, 1.5vw, 12px);
+    height: clamp(8px, 1.5vw, 12px);
+    margin-left: 0.2em; /* Uses em to scale perfectly with font-size */
+}
+
+
+/* =========================================================
+   AXIS CALCULATOR OVERFLOW FIX (LARGE SCREENS)
+   ========================================================= */
+
+@media (min-width: 1024px) {
+    /* Reduce SVG size slightly to ensure it fits within the 1000px card boundaries */
+    .compass-svg {
+        width: 380px !important;
+        height: 380px !important;
+        max-width: 100%;
+    }
+
+    /* Tighten the gap between the compass and inputs to prevent horizontal spill */
+    .axis-content {
+        gap: 3rem;
+        padding-inline: 1rem;
+    }
+
+    /* Ensure the wrapper respects container constraints */
+    .axis-card {
         overflow: hidden;
+        display: flex;
+        flex-direction: column;
     }
-    
-    /* Overlay effect behind menu */
-    .nav__list::before {
-        content: '';
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        background: rgba(0, 0, 0, 0.5);
-        z-index: -1;
-        opacity: 0;
-        transition: opacity 0.4s ease;
+}
+
+
+/* =========================================================
+   REPORT GENERATOR CENTERING (LARGE SCREENS)
+   ========================================================= */
+
+@media (min-width: 1024px) {
+    /* Ensures the outer wrapper and its children (form and report) 
+       are vertically stacked and horizontally centered */
+    .report-wrapper {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin: 0 auto;
+        width: 100%;
     }
-    
-    .nav__list.active::before {
-        opacity: 1;
+
+    /* Centers the cards within the wrapper and maintains 
+       a professional width for readability on wide monitors */
+    .patient-form-card, 
+    .medical-report {
+        width: 100%;
+        max-width: 1000px; /* Aligns with Axis and HR calculator widths */
+        margin-left: auto;
+        margin-right: auto;
     }
-    
-    /* Top padding for logo offset */
-    .nav__list {
-        padding-top: 80px;
-    }
-    
-    /* Menu header with close */
-    .nav__list.active {
-        justify-content: flex-start;
-    }
+}
+
+
+
+/* =========================================================
+   LIGHT MODE VISIBILITY ENHANCEMENTS (CONTRAST FIX)
+   ========================================================= */
+
+body.light-theme {
+    /* Deepen text colors for better legibility */
+    --text-secondary: #2d3748; /* Darker slate for descriptions */
+    --text-muted: #475569;    /* Darker gray for hints/labels */
+    --text-dim: #64748b;      /* Clearer contrast for metadata */
+
+    /* Sharpen UI boundaries */
+    --border-card: #cbd5e1;    /* More visible border for cards */
+    --shadow-light: rgba(0, 0, 0, 0.08); /* More defined depth */
+    --shadow-dark: rgba(0, 0, 0, 0.12);
+
+    /* Background adjustments */
+    --bg-color: #f8fafc;       /* Cleaner, more professional white-blue bg */
+}
+
+/* Specific Component Readability Overrides in Light Mode */
+body.light-theme .calc-input,
+body.light-theme .form-input,
+body.light-theme .patient-form .form-input {
+    background: #ffffff;
+    border: 1.5px solid #cbd5e1;
+    color: #1b1f23;
+}
+
+body.light-theme .calc-input:focus,
+body.light-theme .form-input:focus {
+    border-color: var(--primary-color);
+    background: #fff;
+}
+
+body.light-theme .input-hint,
+body.light-theme .input-suffix,
+body.light-theme .report-label,
+body.light-theme .axis-description {
+    color: #475569; /* Drastic improvement for small helper text */
+    font-weight: 500;
+}
+
+body.light-theme .feature__card p,
+body.light-theme .how-use__step p,
+body.light-theme .about__info p {
+    color: #334155; /* Higher contrast for body copy */
+}
+
+body.light-theme .nav__list li a {
+    color: #1b1f23; /* Darker nav links */
+}
+
+body.light-theme .cardionova-title {
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Softer depth for white bg */
+}
+
+body.light-theme .measurement-item,
+body.light-theme .axis-result,
+body.light-theme .info-card {
+    background: #f1f5f9; /* Light gray-blue for inner cards instead of transparent dark */
+    border: 1px solid #e2e8f0;
 }

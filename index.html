@@ -23,14 +23,112 @@
 
     <title>ECG Smart Calculator</title>
 </head>
+<style>
+/* Button Base Styling */
+.ecg-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 15px;
+    padding: 12px 24px;
+    background-color: var(--bg-color);
+    border: 2px solid var(--border-color);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: var(--transition);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    position: relative;
+    overflow: hidden;
+}
 
+/* Icon Wrapper Styling */
+.ecg-icon-wrapper {
+    width: 60px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f8fafc;
+    border-radius: 6px;
+    padding: 4px;
+}
+
+.ecg-svg {
+    width: 100%;
+    height: 100%;
+}
+
+/* The ECG Path Animation */
+.ecg-path {
+    fill: none;
+    stroke: var(--primary-color);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    
+    /* Animation logic: Creates the "drawing" effect */
+    stroke-dasharray: 150;
+    stroke-dashoffset: 150;
+    animation: heartbeat 2s infinite linear;
+}
+
+/* Text Styling */
+.btn-text {
+    font-family: 'Inter', -apple-system, sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-color);
+    letter-spacing: -0.01em;
+}
+
+/* Hover States */
+.ecg-btn:hover {
+    border-color: var(--primary-color);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.1);
+}
+
+.ecg-btn:hover .ecg-path {
+    stroke: var(--accent-color); /* Turns red on hover */
+    animation-duration: 1s;      /* Faster heartbeat on hover */
+}
+
+.ecg-btn:active {
+    transform: translateY(0);
+}
+
+/* Heartbeat Keyframes */
+@keyframes heartbeat {
+    0% {
+        stroke-dashoffset: 150;
+    }
+    40% {
+        stroke-dashoffset: 0;
+    }
+    100% {
+        stroke-dashoffset: -150;
+    }
+}
+
+/* Dark Mode Support (Optional) */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg-color: #0f172a;
+        --text-color: #f1f5f9;
+        --border-color: #334155;
+    }
+    .ecg-icon-wrapper {
+        background: #1e293b;
+    }
+}
+
+</style>
 <body>
     <!-- HEADER -->
     <header class="header">
         <nav class="nav container">
             <a href="#home" class="nav__logo">
                 <img src="canvas-removebg-preview.webp" alt="HeartCalc Logo" class="logo">     
-                HeartCalc   
+               CN AI
             </a>
             
             <div class="nav__burger" id="menu-button">
@@ -40,7 +138,6 @@
             <ul class="nav__list">
                 <li><a href="#home"><i class="ri-home-4-line"></i> Home</a></li>
                 <li><a href="#calculator"><i class="ri-calculator-line"></i> Calculator</a></li>
-                <li><a href="#report-generator"><i class="ri-file-medical-line"></i> Report</a></li>
                 <li><a href="#how-use"><i class="ri-information-line"></i> How to Use</a></li>
                 <li><a href="#about"><i class="ri-user-line"></i> About</a></li>
                 <li><a href="#contact"><i class="ri-mail-line"></i> Contact</a></li>
@@ -57,9 +154,11 @@
         <div class="home__container container">
             <!-- LEFT TEXT -->
             <div class="home__data">
-                <h1>Calculateur d'Intervalle RR ECG</h1>
+<div class="cardionova-wrapper">
+    <h1 class="cardionova-title">Cardio<span class="accent">Nova AI Platform</span></h1>
+</div>
                 <p>
-                    Cliquez sur deux pics R dans le tracé ECG pour mesurer l'intervalle RR et calculer automatiquement la fréquence cardiaque (Heart Rate).
+An AI platform for ECG analysis, cardiac diagnostics, and smart medical learning.
                 </p>
             </div>
 
@@ -93,37 +192,87 @@
             </div>
         </div>
     </section>
+     <!-- STUDY SECTION -->
+<section class="study-section section" id="study-section">
+    <div class="container">
+        <h2 class="section__title center-title">Choose Your Mode</h2>
+        <p class="study__subtitle">
+            Choose your preferred mode to begin your heart learning or health check experience.
+        </p>
 
-    <!-- CALCULATOR SECTION -->
-    <section class="calculator section" id="calculator">
+        <div class="study__buttons">
+<!-- STUDENT MODE -->
+<!-- STUDENT MODE -->
+<button class="study__btn learning-btn"
+        onclick="window.location.href='Leringpractic.html'">
+
+    <div class="btn-icon">
+        <i class="ri-book-open-line"></i>
+    </div>
+
+    <div class="btn-content">
+        <h3>Study</h3>
+        <p>
+            Learn ECG and heart concepts step by step with simple explanations,
+            visuals, and quizzes.
+        </p>
+    </div>
+
+    <div class="btn-arrow">
+        <i class="ri-arrow-right-line"></i>
+    </div>
+
+</button>
+
+<!-- PATIENT MODE -->
+<a class="study__btn practice-btn" href="patientmode.html">
+    <div class="btn-icon">
+        <i class="ri-heart-pulse-line"></i>
+    </div>
+
+    <div class="btn-content">
+        <h3>Patient Mode</h3>
+        <p>Check your heart health quickly through smart questions and get a personalized risk assessment.</p>
+    </div>
+
+    <div class="btn-arrow">
+        <i class="ri-arrow-right-line"></i>
+    </div>
+</a>
+
+
+   <section class="calculator section" id="calculator">
         <div class="container">
             <h2 class="section__title center-title">ECG Calculator</h2>
-            
-            <!-- Calculator Features Cards -->
-            <div class="features__grid">
-                <div class="feature__card">
-                    <i class="ri-heart-pulse-line"></i>
-                    <h3>Heart Rate</h3>
-                    <p>Calculate BPM from RR interval</p>
-                </div>
-                <div class="feature__card">
-                    <i class="ri-activity-line"></i>
-                    <h3>ECG Analysis</h3>
-                    <p>Analyze ECG waveforms</p>
-                </div>
-                <div class="feature__card">
-                    <i class="ri-time-line"></i>
-                    <h3>RR Interval</h3>
-                    <p>Measure time between beats</p>
-                </div>
-                <div class="feature__card">
-                    <i class="ri-file-chart-line"></i>
-                    <h3>Results</h3>
-                    <p>Export and save results</p>
-                </div>
-            </div>
-        </div>
-    </section>
+<div class="features__grid">
+    <div class="feature__card" onclick="location.href='#hr-calculator'">
+        <i class="ri-heart-pulse-line"></i>
+        <h3>Heart Rate</h3>
+        <p>Calculate BPM from RR interval</p>
+    </div>
+
+    <div class="feature__card" onclick="location.href='#axis-calculator'">
+        <i class="ri-compass-3-line"></i>
+        <h3>ECG Axis Calculator</h3>
+        <p>Determine electrical axis using ECG leads</p>
+    </div>
+
+    <div class="feature__card" onclick="location.href='#ecg-measurement'">
+        <i class="ri-time-line"></i>
+        <h3>RR Interval</h3>
+        <p>Measure time between heartbeats</p>
+    </div>
+
+    <div class="feature__card" onclick="location.href='#report-generator'">
+        <i class="ri-file-chart-line"></i>
+        <h3>Results</h3>
+        <p>Export, analyze, and save ECG reports</p>
+    </div>
+
+</div>
+
+
+
 
     <!-- HEART RATE CALCULATOR -->
     <section class="hr-calculator section" id="hr-calculator">
@@ -608,6 +757,37 @@
         </div>
     </section>
 
+  
+
+
+<!-- Independent ECG Section -->
+<section class="ecg-feature-section">
+    <div class="ecg-section-content">
+        
+        <!-- Section Header -->
+        <div class="ecg-section-header">
+            <h2 class="ecg-section-title">Cardiac Rhythm Analysis</h2>
+            <p class="ecg-section-subtitle">Deep-dive into real-time waveform diagnostics and interactive rhythm patterns.</p>
+        </div>
+
+        <!-- Your Original Button (Untouched) -->
+        <button class="ecg-btn" onclick="window.location.href='wavesExplore.html'">
+            <div class="ecg-icon-wrapper">
+                <svg class="ecg-svg" viewBox="0 0 50 30">
+                    <path class="ecg-path" d="M0 15 H10 L13 5 L17 25 L21 0 L25 30 L29 10 L32 15 H50" />
+                </svg>
+            </div>
+            <span class="btn-text">
+                Interactive ECG Wave & Rhythm Explorer
+            </span>
+        </button>
+
+    </div>
+</section>
+
+
+
+    
     <!-- HOW TO USE SECTION -->
     <section class="how-use section" id="how-use">
         <div class="container">
@@ -678,6 +858,7 @@
             </div>
         </div>
     </section>
+   
 
     <!-- CONTACT SECTION -->
     <section class="contact" id="contact">
@@ -833,9 +1014,9 @@
                         </svg>
                     </div>
                     <div class="footer-brand-text">
-                        <span class="brand-ecg">ECG</span>
-                        <span class="brand-smart">Smart</span>
-                        <span class="brand-calculator">Practice</span>
+                        <span class="brand-ecg">Cardio</span>
+                        <span class="brand-smart">Nova</span>
+                        <span class="brand-calculator">platform</span>
                     </div>
                 </div>
                 <p class="footer-description">
@@ -876,8 +1057,8 @@
                 <h3 class="footer-section-title">Quick Links</h3>
                 <ul class="footer-links">
                     <li><a href="#home">Home</a></li>
-                    <li><a href="#about">About Us</a></li>
-                    <li><a href="#calculator">ECG Tools</a></li>
+                    <li><a href="#calculator">calculator</a></li>
+                     <li><a href="#about">About</a></li>
                     <li><a href="#how-use">How to Use</a></li>
                     <li><a href="#contact">Contact</a></li>
                 </ul>
@@ -909,7 +1090,7 @@
 
         <div class="footer-bottom">
             <p class="footer-copyright">
-                © 2026 Bouziane Hafsa | 3rd Year Biomedical Engineering | PulseIQ Creator
+                © 2026 Bouziane Hafsa | 3rd Year Biomedical Engineering | CardioNova
             </p>
             <p class="footer-disclaimer">
                 This platform is intended for educational purposes only and does not replace professional medical diagnosis.
